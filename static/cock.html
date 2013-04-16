@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <script src="jquery-1.9.0.js"></script>
+    <script src="shit.js"></script>
+    <style type="text/css">
+      html { height: 100% }
+      body { height: 100%; margin: 0; padding: 0 }
+    </style>
+  </head>
+  <body>
+    <div id="map-canvas"></div>
+    <div id="eventAdder">
+      <form id="form" action="javascript:addEvent()">
+          <div class="pop_up">
+            <h1>Add an Event :</h1>
+            <label>
+               <span>Event Name :</span>
+               <input type="text" class="text_input" name="name" id="name"/>
+            </label>
+             <label>
+               <span>Time :</span>
+               <input type="text" class="text_input" name="time" id="time"/>
+               <input type="submit" value="Submit Form" />
+            </label>     
+         </div>       
+    </form>
+    </div>
+  </body>
+</html>
