@@ -23,6 +23,76 @@ io.sockets.on('connection', function(socket) {
 	});
 });
 
+// ========================
+// === Mongodb server ===
+// ========================
+
+var mongo = require('mongodb');
+var host = 'localhost';
+var port = mongo.Connection.DEFAULT_PORT;
+
+var optionsWithEnableWriteAccess = { w: 1 };
+var dbName = 'caftcojdb';
+
+var client = new mongo.Db(
+    dbName,
+    new mongo.Server(host, port),
+    optionsWithEnableWriteAccess
+);
+
+function openDb(onOpen){
+    client.open(onDbReady);
+
+    function onDbReady(error){
+        if (error)
+            throw error;
+        client.collection('userCollection', onUserCollectionReady);
+    }
+
+    function onUserCollectionReady(error, userCollection){
+        if (error)
+            throw error;
+
+        onOpen(userCollection);
+    }
+}
+
+function closeDb(){
+    client.close();
+}
+
+openDb(onDbOpen);
+
+function onDbOpen(collection){
+    insertUserDocuments(collection, onUserDocumentsInserted);
+}
+
+function onUserDocumentsInserted(err){
+    if (err)
+        throw err;
+    console.log('documents inserted!');
+    closeDb();
+}
+
+function insertUserDocuments(collection, docs, done){
+    if (docs.length === 0){
+        done(null);
+        return;
+    }
+    var docHead = docs.shift(); //shift removes first element from docs
+    collection.insert(docHead, function onInserted(err){
+        if (err){
+            done(err);
+            return;
+        }
+        insertUserDocuments(collection, docs, done);
+    });
+}
+
+
+
+
+
 function getClients() {
     var os = require('os')
 
