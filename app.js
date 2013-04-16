@@ -15,6 +15,7 @@ app.listen(8889);
 
 var io = require('socket.io').listen(8888);
 io.sockets.on('connection', function(socket) {
+    console.log("connected!");
 	socket.on("msg", function(data) {
 		socket.emit('status', {success: 'true'});
 		io.sockets.emit('newmsg', {body: data.body});

@@ -96,4 +96,10 @@ function loadScript() {
 
 }
 
-  window.onload = loadScript;
+function init() {
+  var socket = io.connect("http://localhost:8888");
+  loadScript();
+
+}
+
+  window.onload = init;
