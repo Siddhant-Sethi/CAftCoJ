@@ -24,7 +24,7 @@ function createNewPerson(latitude, longitude) {
     // marker.
     window.setTimeout(function() {
       map.panTo(marker.getPosition());
-    }, 30000);
+    }, 3000);
   });
 
   google.maps.event.addListener(marker, 'click', function() {

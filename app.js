@@ -16,26 +16,30 @@ app.listen(8889);
 var io = require('socket.io').listen(8888);
 io.sockets.on('connection', function(socket) {
     console.log("connected!");
+    getClients();
 	socket.on("msg", function(data) {
 		socket.emit('status', {success: 'true'});
 		io.sockets.emit('newmsg', {body: data.body});
 	});
 });
 
-var os = require('os')
+function getClients() {
+    var os = require('os')
 
-var interfaces = os.networkInterfaces();
-var addresses = [];
-for (k in interfaces) {
-    for (k2 in interfaces[k]) {
-        var address = interfaces[k][k2];
-        if (address.family == 'IPv4' && !address.internal) {
-            addresses.push(address.address)
+    var interfaces = os.networkInterfaces();
+    var addresses = [];
+    for (k in interfaces) {
+        for (k2 in interfaces[k]) {
+            var address = interfaces[k][k2];
+            if (address.family == 'IPv4' && !address.internal) {
+                addresses.push(address.address)
+            }
         }
     }
+
+    console.log("addresses: ", addresses);
 }
 
-console.log(addresses)
 
 
 
