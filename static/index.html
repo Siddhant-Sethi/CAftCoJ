@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html> 
+	<head>
+	  <link href="reset.css" rel="stylesheet" type="text/css">
+	  <link href="style.css" rel="stylesheet" type="text/css">
+	  <!-- <link href='http://fonts.googleapis.com/css?family=Wendy+One' rel='stylesheet' type='text/css'>
+ -->
+	</head>
+
+	<body>
+
+		<div class="page index">
+			
+			<div id="bar">
+				<ul>
+					<h1 id="logo">CAFtCoJ</h1>
+				</ul>
+			</div>
+		
+			<div class="content">
+				<form id="Login" name="loginForm" action="javascript:index.login()">
+					<h2 class="Title">Existing Users</h2>
+					<div id ="usernameField">
+						<label for="username">Username: </label>
+						<input id = "user-input" type ="text" name = "username"	required placeholder="Sid">
+					</div>
+					<div id="passwordField">
+						<label for="password">Password: </label>
+						<input id = "password-input" type="password" name="password" required placeholder="complicated"/>
+					</div> <div id="loginFail"></div>
+					<div>
+						<input id="submitButton" name="Submit"  type="submit" value="Login"/>
+					</div>
+				</form>
+				<div class="content">
+					<h2 class="title" id="signup_title">Sign Up</h2>
+					<br>
+					<form id="signup_form" action="javascript:signup.signup()">
+						<div id ="firstName">
+							<p><label for="username">First Name: </label></p>
+							<p><input id = "first" type ="text" name = "firstname" required placeholder="Shubhit"></p>
+						</div>
+						<div id ="lastName">
+							<p><label for="lastname">Last Name: </label></p>
+							<p><input id = "last" type ="text" name = "lastname" required placeholder="Vagina"></p>
+						</div>
+						<div id ="usernameField">
+							<p><label for="username">Username: </label></p>
+							<p><input id = "username" type ="text" name = "username" required placeholder="sVagina"></p>
+						</div>
+						<div id="passwordField">
+							<p><label for="password">Password: </label></p>
+							<p><input id = "password1" type="password" required name="password" /></p>
+						</div>
+						<div id="passwordField">
+							<p><label for="password">Re-Type Password: </label></p>
+							<p><input id = "password2" type="password" required name="password" /></p>
+						</div>
+						<div>
+							<input type="submit" value="Sign Up" />
+						</div>
+					</form>
+				</div>
+			</div>
+			</div>
+		</div>
+
+		<script src="jquery-1.9.0.js"></script>
+		<script src="organizeMyShit.js"></script>
+	</body>
+</html>

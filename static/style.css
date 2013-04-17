@@ -1,13 +1,43 @@
-
-html {
+/*General CSS*/
+html	{
 	height: 100%;
 }
 
 body {
+	font-family: 'Wendy One', sans-serif;
+	background-color: #0B6121;
 	height: 100%;
-    margin: 0;
+	margin: 0;
     padding: 0;
 }
+
+.page {
+	width: 1098px;
+	/*margin-left: auto;
+	margin-right: auto;*/
+	margin: auto;
+	/*height: 95%;*/
+	display: block;
+	position: relative;
+	border-radius: 10px;
+	background-color: white;
+	box-shadow: 0px 0px 8px 0px #000000;
+}
+
+.alert {
+	color: red;
+}
+
+/*.title {
+	font-size: 70px;
+	text-align: left;
+	padding-top: 0px;
+	padding-left: 5px;
+	padding-bottom: 20px;
+	padding: 20px 0px 20px 20px;
+	text-shadow: 2px 2px white;
+}*/
+
 
 #map-canvas { 
     height: 100%;
@@ -21,11 +51,264 @@ body {
 	z-index: 1;
 }
 
+li {
+	margin: 0px;
+	display: inline-block;
+}
+
+h1	{
+	margin-right: 80px;
+}
+
+/*Used for the Top Bar*/
+
+#bar ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	position: fixed;
+	top: 0;
+	height: auto;
+	width: 1098px;
+	text-align: left;
+	/*padding-top: 15px;*/
+	box-shadow: 0px 0px 8px 0px #000000;
+	background-color: #23BF00;
+}
+
+#bar button {
+	font-size: 30px;
+	padding-left: 15px;
+	padding-right: 15px;
+	color: black;
+	background-color: #488AC7;
+	margin: 0px;
+	text-decoration: none;
+	border: 1px solid #488AC7;
+	text-shadow: 1px 1px white;
+}
+
+#bar button:hover {
+	background-color: #7ABCF9;
+	border-top: 1px solid white;
+	border-right: 1px solid #333;
+	border-left: 1px solid white;
+	border-bottom: 1px solid #333;
+}
 
 
 
+#bar {
+	display: block;
+	z-index: 1;
+	position: fixed;
+	border-radius: 10px;
+	padding-bottom: 20px;
+}
+
+#logo {
+	font-size: 70px;
+	text-align: left;
+	/*padding-top: 0px;
+	padding-left: 5px;
+	padding-bottom: 20px;*/
+	padding: 20px 0px 20px 20px;
+	text-shadow: 2px 2px white;
+}
+
+.index h2, .signup h2	{
+	/*font-size: 50px;*/
+	text-align: center;
+	margin: 10px;
+	margin-top: 20px;
+}
+
+/* Indicate button for current page */
+.page #current	{
+	background-color: #7ABCF9;
+	border-top: 1px solid white;
+	border-right: 1px solid #333;
+	border-left: 1px solid white;
+	border-bottom: 1px solid #333;
+}
+
+
+.content .title	{
+	font-size: 30px;
+	margin-bottom: 10px;
+}
+
+.content 	{
+	padding: 150px 0px 30px 40px;
+	text-align: center;
+	margin: auto auto;
+}
+
+
+.calendar .content	{
+	padding-top: 120px;
+}
+
+#Login	{
+	/*display: inline;*/
+	padding-bottom: 20px;
+	border-bottom: 2px solid #000000;
+}
+
+[type="submit"]	{
+	font-size: 18px;
+	margin: 20px 0;
+	padding: 5px;
+	border-radius: 5px;
+	/*background-color: #1e90ff;*/
+	background-color: #23BF00;
+	color: #f5f5f5;
+}
+
+#Signup	{
+	/*display: inline;*/
+	padding-bottom: 100px;
+}	
 
 
 
+/*Sign Up Page*/
+#signup_title {
+	font-size: 50px;
+	text-align: center;
 
+}
+
+.signup table {
+	width: 400px;
+	margin: 0 auto;
+}
+
+.addclass table {
+	width: 200px;
+	margin: 0 auto;
+	/*text-align: center;*/
+}
+
+.addevent table 	{
+	width: 600px;
+	margin: 0 auto;
+}
+
+
+#signup_form {
+	font-size: 15px;
+	/*margin-left: 20px;*/
+}
+
+/*table 	{
+	width: 100%;
+	
+	/*text-align: center;
+}*/
+
+table td:first-child	{
+	text-align: right;
+	padding-bottom: 5px;
+	padding-right: 5px;
+}
+
+table input 	{
+	text-align: left;
+}
+
+/*Add Event Page*/
+#addEvent_title {
+	font-size: 50px;
+	position: relative;
+}
+
+#priority {
+	width:20px;
+}
+
+#addEventAlert {
+	color: red;
+}
+
+.priorityButtons {
+	width: 40px;
+}
+
+/*#eventTable {
+	table-layout: fixed;
+	font-size: 20px;
+}
+
+.startingQuestions {
+	font-size: 25px;
+}*/
+
+#loginFail {
+	color: red;
+}
+
+
+/*Calendar Page*/
+#calendar {
+	font-size: 40px;
+}
+
+
+
+#sidebar {
+	width: 165px;
+	top: 130px;
+	left: 0px;
+	min-height: 400px;
+	position: absolute;
+	/*left: 0px;*/
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+
+#sidebar ul {
+	height: 440px;
+	/*width: 165px;
+	top: 118px;*/
+	/*left: 0px;*/
+	list-style-type: none;
+}
+
+#sidebarContent {
+	position: absolute;
+	width: 135px;
+	top: 50px;
+	left: 30px;
+	text-align: left;
+
+}
+
+.calendar #canvas 	{
+	top: 100px;
+	/*width: 900px;*/
+	margin-left: 130px;
+	max-height: 450px;
+	/*display: inline-block;*/
+	right: 10px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	border: 3px solid black;
+}
+/*canvas*/
+#calendarCanvas {
+	border: 3px solid #000000;
+	/*display: block;*/
+	/*height: 100%;*/
+	margin: 0px 7px auto auto;
+	
+	/*position: relative;*/
+	/*top: 130px;
+	left: 165px;
+	position: absolute;*/
+	z-index: 0;
+
+}
 
