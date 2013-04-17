@@ -23,7 +23,7 @@ io.sockets.on('connection', function(socket) {
 });
 
 // ========================
-// === Mongodb server ===
+// === Mongoose server ===
 // ========================
 
 var path = require('path');
@@ -33,13 +33,16 @@ var mongoose = require('mongoose');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
+init();
+
 function init(){
     app = express();
     configureExpress(app);
 
     var User = initPassportUser();
+    //console.log("User", User);
 
-    mongoose.connect('mongodb://localhost/caftcoj');
+    var db = mongoose.connect('mongodb://localhost/caftcoj');
     //checkForAndCreateRootUser(User);
 
     require('./loginRoutes')(app);
@@ -48,9 +51,24 @@ function init(){
     http.createServer(app).listen(3000, function() {
         console.log("Express server listening on port %d", 3000);
     });
+
+    Groups = createGroup("default", []);
+    //console.log("Groups", Groups);
 }
 
-init();
+function createGroup(name, users) {
+    var Groups = require('./Groups');
+    var defaultGroup = new Groups({name: name, users: users});
+    defaultGroup.registeredTimestamp = new Date();
+    
+    // Groups.findOne({}, function(err, doc) {
+    //     if (err)
+    //         throw err;
+    //     console.log(doc);
+    // });
+    return Groups;
+}
+
 
 function configureExpress(app){
     app.configure(function(){
@@ -91,6 +109,7 @@ function checkForAndCreateRootUser(User){
         });  
     });
 }
+
 
 
 
@@ -205,12 +224,19 @@ app.get("/database/:user", function(request, response){
   });
 });
 
-app.post("/database/event", function(request, response) {
-    //post info to server
-  response.send({ 
-    event: event,
-    success: successful
-  });
+app.post("/newEvent", function(request, response) {
+    Groups.findOne({__id: request.body.group}, function(err, group) {
+        if (err) response.send('error');
+        if (group) {
+            group.events.push({name: request.body.name,
+                                time: request.body.time});
+            response.send('success');
+        }
+    })
+  // response.send({ 
+  //   event: event,
+  //   success: successful
+  // });
 });
 
 // update one item

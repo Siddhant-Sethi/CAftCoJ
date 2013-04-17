@@ -10,7 +10,8 @@ var User = new Schema({
     lastLocation: {
     	lat: Number,
     	lon: Number
-    }
+    },
+    groups: Array
     //lastIp: String,
     //lastHost: String,
     //lastUserAgent: String,

@@ -99,19 +99,19 @@ var gmap = {
       icon: image,
     });
 
-    google.maps.event.addListener(gmap.map, 'center_changed', function() {
-      // 3 seconds after the center of the map has changed, pan back to the
-      // marker.
-      window.setTimeout(function() {
-        gmap.map.panTo(marker.getPosition());
-      }, 3000);
-    });
+    // google.maps.event.addListener(gmap.map, 'center_changed', function() {
+    //   // 3 seconds after the center of the map has changed, pan back to the
+    //   // marker.
+    //   window.setTimeout(function() {
+    //     gmap.map.panTo(marker.getPosition());
+    //   }, 3000);
+    // });
 
     google.maps.event.addListener(marker, 'click', function() {
       infowindow.open(gmap.map, this);
       console.log("shit");
       gmap.map.setZoom(8);
-      gmap.map.setCenter(marker.getPosition());
+      gmap.map.panTo(marker.getPosition());
     });
 
     google.maps.event.addListener(gmap.map, 'click', function(event) {
@@ -126,7 +126,9 @@ var gmap = {
           id: gmap.markerIndex,
           content: "",
         });
+      console.log("placemarker marker", marker);
       gmap.events.push(marker);
+      gmap.map.panTo(marker.getPosition());
       gmap.popupEventAdder(marker);
       gmap.markerIndex = gmap.markerIndex + 1;
   },
@@ -134,17 +136,38 @@ var gmap = {
   addEvent: function() {
     var marker = gmap.events[gmap.markerIndex];
     var infowindow = new google.maps.InfoWindow();
-    console.log(marker);
+    console.log("addevent marker", marker);
     console.log(gmap.events);
     console.log(marker.id);
-    marker.content = "Event Name: " + $("#name").val() + "\nTime: " + $("#time").val();
+    marker.content = "Event Name: " + $("#name").val() + "\n<br>Time: " + $("#time").val();
     infowindow.setContent(marker.content);
+    //gmap.map.setCenter(marker.getPosition());
+    //infowindow.open(gmap.map, this);
     google.maps.event.addListener(gmap.events[gmap.markerIndex], 'click', function() {
       infowindow.open(gmap.map, this);
       gmap.map.setCenter(marker.getPosition());
     });
     gmap.revertEventAdder();
+
+    var newEvent = {name: $("#name").val(), time: $("#time").val(), group: undefined}
+
+    gmap.addEventToServer(newEvent, function(){
+      console.log("Event added to group");
+    },
+    function() {
+      console.log("Error: event not added");
+    });
   },
+
+  addEventToServer: function(data, onSuccess, onError) {
+    $.ajax({
+    type: "post",
+    data: data,
+    url: "/newEvent",
+    success: onSuccess,
+    error: onError
+    });
+  }
 
   popupEventAdder: function(marker) {
     var canvas = $("#map-canvas");

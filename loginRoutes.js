@@ -1,5 +1,8 @@
 var passport = require('passport');
 var User = require('./User');
+var mongoose = require('mongoose');
+var Groups = require('./Groups');
+var Groups = mongoose.model('Groups', Groups);
 
 module.exports = function (app) {
     
@@ -13,7 +16,7 @@ module.exports = function (app) {
 
     app.post('/register', function(req, res) {
         var username = req.body.username;
-        
+        //console.log("User", User);
         User.findOne({username : username }, function(err, existingUser) {
             if (err){
                 return res.send({'err': err});
@@ -39,6 +42,14 @@ module.exports = function (app) {
                 });
             });  
         });
+        console.log("Groups", Groups);
+        Groups.findOne({name: "default"}, function(err, defaultGroup) {
+            if (err)
+                throw error;
+            if (defaultGroup)
+                console.log("It found the default group, and is adding the new user to it");
+                defaultGroup.users.push(username);
+        })
     });
 
     app.post('/login', passport.authenticate('local'), function(req, res) {
