@@ -9,6 +9,14 @@ body {
 	height: 100%;
 }
 
+.pop_up {
+	height: 0;
+}
+
+#map-canvas {
+	height: 100%;
+}
+
 .page {
 	width: 1098px;
 	/*margin-left: auto;

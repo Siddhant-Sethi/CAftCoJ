@@ -76,9 +76,9 @@ var login = {
 
 var gmap = {
   init: function() {
-    gmap.loadScript();
     gmap.events = [];
     gmap.markerIndex = -1;
+    gmap.loadScript();
   },
 
   createNewPerson: function(latitude, longitude) {
@@ -123,7 +123,7 @@ var gmap = {
       var marker = new google.maps.Marker({
           position: location,
           map: gmap.map,
-          id: markerIndex,
+          id: gmap.markerIndex,
           content: "",
         });
       gmap.events.push(marker);
@@ -132,7 +132,7 @@ var gmap = {
   },
 
   addEvent: function() {
-    var marker = gmap.events[markerIndex];
+    var marker = gmap.events[gmap.markerIndex];
     var infowindow = new google.maps.InfoWindow();
     console.log(marker);
     console.log(gmap.events);
