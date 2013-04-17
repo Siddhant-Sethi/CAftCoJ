@@ -9,6 +9,8 @@ app.get("/static/:staticFilename", function (request, response) {
 app.listen(8889);
 
 
+
+
 // ========================
 // === Socket.io server ===
 // ========================
@@ -46,7 +48,13 @@ function openDb(onOpen){
     function onDbReady(error){
         if (error)
             throw error;
+
         client.collection('userCollection', onUserCollectionReady);
+        client.userCollection.insert({w: 1});
+        client.userCollection.find().each(function(err, result) {
+            if (error) throw error;
+            console.log(result);
+        })
     }
 
     function onUserCollectionReady(error, userCollection){
@@ -61,7 +69,14 @@ function closeDb(){
     client.close();
 }
 
-openDb(onDbOpen);
+function initServer() {
+    openDb(onDbOpen);
+
+}
+
+
+initServer();
+
 
 function onDbOpen(collection){
     insertUserDocuments(collection, onUserDocumentsInserted);
@@ -111,5 +126,46 @@ function getClients() {
 }
 
 
+
+
+// get item
+app.get("/database/:user", function(request, response){
+    //request data
+  response.send({
+    profile: profile,
+    success: (profile !== undefined)
+  });
+});
+
+app.post("/database/event", function(request, response) {
+    //post info to server
+  response.send({ 
+    event: event,
+    success: successful
+  });
+});
+
+// update one item
+app.put("/database/event", function(request, response){
+  //edit item
+  response.send({
+    success: true
+  });
+});
+
+
+// delete event
+app.delete("/database/:user/:className", function(request, response){
+  //delete it
+  response.send({
+    database: database,
+    success: true
+  });
+});
+
+// This is for serving files in the static directory
+app.get("/static/:staticFilename", function (request, response) {
+    response.sendfile("static/" + request.params.staticFilename);
+});
 
 
