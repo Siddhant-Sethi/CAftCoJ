@@ -40,7 +40,8 @@ var client = new mongo.Db(
     optionsWithEnableWriteAccess
 );
 
-function openDb(onOpen){
+function openDb(onDbOpen){
+
     client.open(onDbReady);
 
     function onDbReady(error){
@@ -52,8 +53,8 @@ function openDb(onOpen){
     function onUserCollectionReady(error, userCollection){
         if (error)
             throw error;
+        onDbOpen(userCollection);
 
-        onOpen(userCollection);
     }
 }
 
