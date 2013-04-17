@@ -2,11 +2,8 @@
 // ==== Express server ====
 // ========================
 var express = require("express");
-var app = express();
-app.get("/static/:staticFilename", function (request, response) {
-  response.sendfile("static/" + request.params.staticFilename);
-});
-app.listen(8889);
+// var app = express();
+// app.listen(8889);
 
 
 
@@ -29,80 +26,151 @@ io.sockets.on('connection', function(socket) {
 // === Mongodb server ===
 // ========================
 
-var mongo = require('mongodb');
-var host = 'localhost';
-var port = mongo.Connection.DEFAULT_PORT;
+var path = require('path');
+var express = require('express');
+var http = require('http');
+var mongoose = require('mongoose');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
 
-var optionsWithEnableWriteAccess = { w: 1 };
-var dbName = 'caftcojdb';
+function init(){
+    app = express();
+    configureExpress(app);
 
-var client = new mongo.Db(
-    dbName,
-    new mongo.Server(host, port),
-    optionsWithEnableWriteAccess
-);
+    var User = initPassportUser();
 
-function openDb(onOpen){
-    client.open(onDbReady);
+    mongoose.connect('mongodb://localhost/caftcoj');
+    //checkForAndCreateRootUser(User);
 
-    function onDbReady(error){
-        if (error)
-            throw error;
+    require('./loginRoutes')(app);
+    require('./appRoutes')(app);
 
-        client.collection('userCollection', onUserCollectionReady);
-        client.userCollection.insert({w: 1});
-        client.userCollection.find().each(function(err, result) {
-            if (error) throw error;
-            console.log(result);
-        })
-    }
-
-    function onUserCollectionReady(error, userCollection){
-        if (error)
-            throw error;
-
-        onOpen(userCollection);
-    }
-}
-
-function closeDb(){
-    client.close();
-}
-
-function initServer() {
-    openDb(onDbOpen);
-
-}
-
-
-initServer();
-
-
-function onDbOpen(collection){
-    insertUserDocuments(collection, onUserDocumentsInserted);
-}
-
-function onUserDocumentsInserted(err){
-    if (err)
-        throw err;
-    console.log('documents inserted!');
-    closeDb();
-}
-
-function insertUserDocuments(collection, docs, done){
-    if (docs.length === 0){
-        done(null);
-        return;
-    }
-    var docHead = docs.shift(); //shift removes first element from docs
-    collection.insert(docHead, function onInserted(err){
-        if (err){
-            done(err);
-            return;
-        }
-        insertUserDocuments(collection, docs, done);
+    http.createServer(app).listen(3000, function() {
+        console.log("Express server listening on port %d", 3000);
     });
 }
+
+init();
+
+function configureExpress(app){
+    app.configure(function(){
+        app.use(express.bodyParser());
+        app.use(express.methodOverride());
+
+        app.use(express.cookieParser('your secret here'));
+        app.use(express.session());
+
+        app.use(passport.initialize());
+        app.use(passport.session());
+
+        app.use(app.router);
+        app.use(express.static(path.join(__dirname, 'static')));
+    });
+}
+
+function initPassportUser(){
+    var User = require('./User');
+
+    passport.use(new LocalStrategy(User.authenticate()));
+
+    passport.serializeUser(User.serializeUser());
+    passport.deserializeUser(User.deserializeUser());
+
+    return User;
+}
+
+function checkForAndCreateRootUser(User){
+    User.findOne({username : "root" }, function(err, existingUser) {
+        if (err || existingUser) return;
+        var user = new User({ username : "root" });
+        user.superuser = true;
+        user.registeredTimestamp = new Date();
+        user.setPassword("SECRET", function(err) {
+            if (err) return;
+            user.save(function(err) { });
+        });  
+    });
+}
+
+
+
+// var mongo = require('mongodb');
+// var host = 'localhost';
+// var port = mongo.Connection.DEFAULT_PORT;
+
+// var optionsWithEnableWriteAccess = { w: 1 };
+// var dbName = 'db';
+
+// var client = new mongo.Db(
+//     dbName,
+//     new mongo.Server(host, port),
+//     optionsWithEnableWriteAccess
+// );
+
+// function openDb(onDbOpen){
+//     client.open(onDbReady);
+
+//     function onDbReady(error){
+//         if (error)
+//             throw error;
+
+
+//         client.collection('userCollection', onUserCollectionReady);
+        
+//     }
+
+//     function onUserCollectionReady(error, userCollection){
+//         if (error)
+//             throw error;
+
+//         onDbOpen(userCollection);
+        
+//         // client.userCollection.insert({w: 1});
+//         // client.userCollection.find().each(function(err, result) {
+//         //     if (error) throw error;
+//         //     console.log("result", result);
+//         // })
+//     }
+// }
+
+// function closeDb(){
+//     client.close();
+// }
+
+// function initServer() {
+//     openDb(onDbOpen);
+
+// }
+
+
+// initServer();
+
+
+// function onDbOpen(collection){
+//     insertUserDocuments(collection, onUserDocumentsInserted);
+// }
+
+// function onUserDocumentsInserted(err, collection){
+//     if (err)
+//         throw err;
+//     console.log('documents inserted!');
+//     //console.log("client:", client);
+//     collection.find().toArray(function(err, result) {
+//             if (error) throw error;
+//             console.log(result);
+//         })
+//     closeDb();
+// }
+
+// function insertUserDocuments(collection, done){
+
+//     collection.insert({n: 1}, function(err){
+//         console.log("hey");
+//         done(err, collection);
+//         console.log("after");
+//         return;
+//     });
+// }
 
 
 

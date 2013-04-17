@@ -1,52 +1,85 @@
 
-var login {
-  initLogin: function() {
+var login = {
+  init: function() {
 
-  }
+  },
+
+  login: function() {
+    var user = $("#user-input");
+    var password = $("#password-input");
+    var newlogin = {
+                    username: user.val(),
+                    password: password.val()
+                    };
+    login.loginServer(newlogin, 
+                 function success(data){
+                    //alert(JSON.stringify(data));
+                    window.location.href = 'map.html';
+                },
+                function error(xhr, status, err){
+                    alert(JSON.stringify(err));
+                });
+  },
+
+  loginServer: function(data, onSuccess, onError) {
+    $.ajax({
+    type: "post",
+    data: data,
+    url: "/login",
+    success: onSuccess,
+    error: onError
+    });
+  },
 
   signup: function() {
-    signup.userTaken = false;
-    signup.passDiff = false;
+    //signup.userTaken = false;
+    login.passDiff = false;
     var user = $("#username");
     var firstName = $("#first");
     var lastName = $("#last");
     var password1 = $("#password1");
     var password2 = $("#password2");
-    if (password2.val() !== password1.val()) signup.passDiff = true;
+    if (password2.val() !== password1.val()) login.passDiff = true;
     //if (user.val() in database) signup.userTaken = true;
-    if (signup.passDiff === false && signup.userTaken === false) {
+    if (login.passDiff === false) {
       var newUser = {
                     first: firstName.val(),
                     last: lastName.val(),
+                    username: user.val(),
                     password: password1.val()
                     };
-      database[user.val()] = newUser;
-      signup.addUser(user.val(), newUser);
+      login.addUser(newUser, 
+                function success(data){
+                    //alert(JSON.stringify(data));
+                    window.location.href = 'map.html';
+                },
+                function error(xhr, status, err){
+                    alert(JSON.stringify(err));
+                });
     }
-    signup.refreshSignup();
+    
   },
 
-  addUser: function(user, data) {
+  addUser: function(data, onSuccess, onError) {
     $.ajax({
     type: "post",
-    data: {"user": user, "data": data},
-    url: "/database/newUser",
-    success: function(data) { 
-      window.location.href = 'addclass.html#' + encodeURI(user);
-    }
+    data: data,
+    url: "/register",
+    success: onSuccess,
+    error: onError
     });
-  },
+  }
 }
 
 
 
 
-var gmap {
-  initMap: function() {
+var gmap = {
+  init: function() {
     gmap.loadScript();
     gmap.events = [];
     gmap.markerIndex = -1;
-  }
+  },
 
   createNewPerson: function(latitude, longitude) {
     var mapOptions = {
@@ -84,7 +117,7 @@ var gmap {
     google.maps.event.addListener(gmap.map, 'click', function(event) {
       gmap.placeMarker(event.latLng);
     });
-  }
+  },
 
   placeMarker: function(location) {
       var marker = new google.maps.Marker({
@@ -96,7 +129,8 @@ var gmap {
       gmap.events.push(marker);
       gmap.popupEventAdder(marker);
       gmap.markerIndex = gmap.markerIndex + 1;
-  }
+  },
+
   addEvent: function() {
     var marker = gmap.events[markerIndex];
     var infowindow = new google.maps.InfoWindow();
@@ -110,46 +144,65 @@ var gmap {
       gmap.map.setCenter(marker.getPosition());
     });
     gmap.revertEventAdder();
-  }
+  },
 
   popupEventAdder: function(marker) {
     var canvas = $("#map-canvas");
     canvas.css("height", "80%");
     var popup = $("#eventAdder");
     popup.css("height", "20%");
-  }
+  },
 
   revertEventAdder: function() {
     var canvas = $("#map-canvas");
     canvas.css("height", "100%");
     var popup = $("#eventAdder");
     popup.css("height", "0");
-  }
+  },
 
   loadPeople: function() {
+    console.log("comes to loadPeople");
     navigator.geolocation.getCurrentPosition(function(position) {
         console.log("cock");
         gmap.createNewPerson(position.coords.latitude, position.coords.longitude);
       });
-  }
+  },
+
   loadScript: function() {
       var script = document.createElement("script");
       script.type = "text/javascript";
-      script.src = "http://maps.googleapis.com/maps/api/js?key=AIzaSyDsRQOK6mSlZxIcx35mNf_h2dbcsF4DBAo&sensor=true&callback=loadPeople";
+      script.src = "http://maps.googleapis.com/maps/api/js?key=AIzaSyDsRQOK6mSlZxIcx35mNf_h2dbcsF4DBAo&sensor=true&callback=gmap.loadPeople";
       document.body.appendChild(script);
-      console.log(script);
+      //console.log(script);
       
 
   }
 }
 
 
-
-
-
-function init() {
-  var socket = io.connect("http://localhost:8888");
-  gmap.initMap();
+function checkLocation() {
+  var pathname = window.location.pathname;
+  var pages = ["map"];
+  var currentState = undefined;
+  for (i = 0; i < pages.length; i++) {
+    if (pathname.indexOf(pages[i]) !== -1) {
+      currentState = pages[i];
+    }
+  }
+  return currentState;
 }
 
-window.onload = init;
+function manageState(state) {
+  if (state === undefined) login.init();
+  if (state === "map") gmap.init();
+}
+
+$(document).ready(function() {
+    itIsReady();
+   });
+
+function itIsReady () {
+    var currentState = checkLocation();
+    manageState(currentState);
+}
+
