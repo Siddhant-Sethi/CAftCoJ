@@ -40,6 +40,11 @@ module.exports = function (app) {
                     }
                     return res.send('success');
                 });
+
+                User.find(function(err, aUser) {
+                    if (err) throw err;
+                    if (aUser) console.log("User: ", aUser);
+                })
             });  
         });
         //console.log("Groups", Groups);
@@ -54,7 +59,7 @@ module.exports = function (app) {
                 defaultGroup.save(function(err) {
                     if (err) throw err;
                     console.log("no error");
-                })
+                });
                 Groups.find({name: "default"}, function(err, defaultG) {
                     if (err)
                         throw error;

@@ -14,6 +14,7 @@ var login = {
     login.loginServer(newlogin, 
                  function success(data){
                     //alert(JSON.stringify(data));
+                    login.user = user.val();
                     window.location.href = 'map.html';
                 },
                 function error(xhr, status, err){
@@ -117,7 +118,19 @@ var gmap = {
     google.maps.event.addListener(gmap.map, 'click', function(event) {
       gmap.placeMarker(event.latLng);
     });
+
+    gmap.updateLocation(latitude, longitude);
   },
+
+  updateLocation: function(latitude, longitude) {
+    $.ajax({
+    type: "post",
+    data: {user: login.user, latitude: latitude, longitude: longitude},
+    url: "/updateLocation",
+    success: onSuccess,
+    error: onError
+    });
+  }
 
   placeMarker: function(location) {
       var marker = new google.maps.Marker({

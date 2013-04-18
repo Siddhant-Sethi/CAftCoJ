@@ -247,6 +247,21 @@ app.post("/newEvent", function(request, response) {
   // });
 });
 
+app.post("/updateLocation", function(request, response) {
+    var successful = false;
+    User.findOne({username: request.body.user}, function(err, user) {
+        if (err) throw err;
+        if (user) {
+            user.lastLocation.lat = request.body.latitude;
+            user.lastLocation.lon = request.body.longitude;
+            successful = true;
+        }
+    })
+  response.send({ 
+    success: successful
+  });
+});
+
 // update one item
 app.put("/database/event", function(request, response){
   //edit item
