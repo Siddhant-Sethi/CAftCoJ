@@ -167,7 +167,7 @@ var gmap = {
     success: onSuccess,
     error: onError
     });
-  }
+  },
 
   popupEventAdder: function(marker) {
     var canvas = $("#map-canvas");

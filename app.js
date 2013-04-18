@@ -42,7 +42,7 @@ function init(){
     var User = initPassportUser();
     //console.log("User", User);
 
-    var db = mongoose.connect('mongodb://localhost/caftcoj');
+    db = mongoose.connect('mongodb://localhost/caftcoj');
     //checkForAndCreateRootUser(User);
 
     require('./loginRoutes')(app);
@@ -60,13 +60,21 @@ function createGroup(name, users) {
     var Groups = require('./Groups');
     var defaultGroup = new Groups({name: name, users: users});
     defaultGroup.registeredTimestamp = new Date();
+    defaultGroup.save(function(err) {
+        if (err) throw err;
+    });
+    //Groups.insert(defaultGroup);
     
-    // Groups.findOne({}, function(err, doc) {
-    //     if (err)
-    //         throw err;
-    //     console.log(doc);
-    // });
+    Groups.findOne({}, function(err, doc) {
+        if (err)
+            throw err;
+        console.log("this is her :",doc);
+    });
     return Groups;
+
+    // User.find().each(function(err, doc){
+    //     console.log("users:", doc);
+    // });
 }
 
 

@@ -42,14 +42,29 @@ module.exports = function (app) {
                 });
             });  
         });
-        console.log("Groups", Groups);
+        //console.log("Groups", Groups);
         Groups.findOne({name: "default"}, function(err, defaultGroup) {
             if (err)
                 throw error;
             if (defaultGroup)
                 console.log("It found the default group, and is adding the new user to it");
-                defaultGroup.users.push(username);
-        })
+                console.log("Before:", defaultGroup.users);
+                defaultGroup["users"].push(username);
+                console.log("After:", defaultGroup.users);
+                defaultGroup.save(function(err) {
+                    if (err) throw err;
+                    console.log("no error");
+                })
+                Groups.find({name: "default"}, function(err, defaultG) {
+                    if (err)
+                        throw error;
+                    if (defaultG)
+                        console.log("Second Find:", defaultG);
+                });
+        });
+
+        
+
     });
 
     app.post('/login', passport.authenticate('local'), function(req, res) {
