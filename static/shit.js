@@ -15,7 +15,7 @@ var login = {
                  function success(data){
                     //alert(JSON.stringify(data));
                     login.user = user.val();
-                    window.location.href = 'map.html';
+                    window.location.href = 'map.html#' + encodeURI(user.val());
                 },
                 function error(xhr, status, err){
                     alert(JSON.stringify(err));
@@ -52,7 +52,7 @@ var login = {
       login.addUser(newUser, 
                 function success(data){
                     //alert(JSON.stringify(data));
-                    window.location.href = 'map.html';
+                    window.location.href = 'map.html#' + encodeURI(user.val());
                 },
                 function error(xhr, status, err){
                     alert(JSON.stringify(err));
@@ -116,7 +116,7 @@ var gmap = {
 
     console.log(marker);
 
-    gmap.createOtherPeople(gmap.userArray);
+    
 
     // google.maps.event.addListener(gmap.map, 'center_changed', function() {
     //   // 3 seconds after the center of the map has changed, pan back to the
@@ -136,19 +136,22 @@ var gmap = {
     google.maps.event.addListener(gmap.map, 'click', function(event) {
       gmap.placeMarker(event.latLng);
     });
+    console.log("comes here");
     gmap.updateLocation(latitude, longitude, function(){
       console.log("failed to update your location in the server");
     }, function() {
       console.log("successfully updated your location in the server");
     });
 
+    gmap.createOtherPeople(gmap.userArray);
+    
   },
 
 updateLocation: function(latitude, longitude, onError, onSuccess) {
-  //console.log("this current user", currentUser);
+    console.log("this current user", userString);
     $.ajax({
     type: "post",
-    data: {user: currentUser, latitude: latitude, longitude: longitude},
+    data: {user: userString, latitude: latitude, longitude: longitude},
     url: "/updateLocation",
     success: onSuccess,
     error: onError
@@ -206,7 +209,7 @@ updateLocation: function(latitude, longitude, onError, onSuccess) {
     });
   },
 
- getAllUsers: function(onSuccess, onError) {
+  getAllUsers: function(onSuccess, onError) {
     $.ajax({
     type: "get",
     url: "/getAllUsers",
@@ -246,6 +249,7 @@ updateLocation: function(latitude, longitude, onError, onSuccess) {
   createOtherPeople: function(userArray) {
     console.log(userArray);
     for (var i = 0; i <userArray.length; i++) {
+      if (userArray[i].username === userString) continue;
       var firstName = userArray[i].first;
       var lastName = userArray[i].last;
       
@@ -309,10 +313,6 @@ function checkLocation() {
 
 function manageState(state) {
   if (state !== undefined) {
-    checkCurrentUser(function(data){
-      currentUser = data.username;
-      console.log("currentUser", currentUser);
-    }, function(){console.log("did not find user")});
   }
   if (state === undefined) login.init();
   if (state === "map") gmap.init();
@@ -324,17 +324,21 @@ $(document).ready(function() {
 
 
 
-function checkCurrentUser(onSuccess, onError) {
-  $.ajax({
-    type: "get",
-    url: "/getUser",
-    success: onSuccess,
-    error: onError
-    });
-}
+// function checkCurrentUser(onSuccess, onError) {
+//   $.ajax({
+//     type: "get",
+//     url: "/getUser",
+//     success: onSuccess,
+//     error: onError
+//     });
+// }
 
 
 function itIsReady () {
+    var userIndex = window.location.href.indexOf("#");
+    userString = undefined;
+    if (userIndex !== -1) userString = decodeURI(window.location.href.slice(userIndex+1));
+    console.log("userString", userString);
     var currentState = checkLocation();
     manageState(currentState);
 }
