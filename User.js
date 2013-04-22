@@ -5,13 +5,15 @@ var passportLocalMongoose = require('passport-local-mongoose');
 var User = new Schema({
     first: String,
     last: String,
+    userID: String,
     registeredTimestamp: Date,
     lastLoginTimestamp: Date,
     lastLocation: {
     	lat: Number,
     	lon: Number
     },
-    groups: Array
+    groups: Array,
+    current: Boolean
     //lastIp: String,
     //lastHost: String,
     //lastUserAgent: String,

@@ -39,7 +39,7 @@ function init(){
     app = express();
     configureExpress(app);
 
-    var User = initPassportUser();
+    User = initPassportUser();
     //console.log("User", User);
 
     db = mongoose.connect('mongodb://localhost/caftcoj');
@@ -221,16 +221,74 @@ function getClients() {
 }
 
 
-
+app.get("/logout", function(request, response){
+    User.findOne({current: true}, function(err, user) {
+        if (err) response.send({'err': err, 'success': false});
+        if (user) {
+            user.current = false;
+            user.save(function(err) {
+                if (err) response.send({'error': err});
+                response.send('success');
+            });
+        } else {
+            console.log("this should not happen");
+        }
+    })
+});
 
 // get item
-app.get("/database/:user", function(request, response){
-    //request data
-  response.send({
-    profile: profile,
-    success: (profile !== undefined)
-  });
+app.get("/getAllUsers", function(request, response){
+    userArray1 = [];
+    successful = true;
+    Groups.find({name: "default"}, function(err, group) {
+        if (err) {
+            console.log("GROUP ERROR");
+            //response.send({'error': err});
+            successful = false;
+        }
+        if (group) {
+            console.log("group[0].users", group[0].users);
+            var userArray = getUserArray(group[0].users, userArray1, response);
+            console.log("THISuserArray", userArray);
+            
+            }
+    });
+    //response.send({'success': true, 'userArray': userArray});
+
 });
+//var globalUserArray;
+
+function getUserArray(usernameArray, userArray2, response) {
+    userArray2 = userArray2;
+    console.log("usernameArray first", usernameArray);
+    if (usernameArray.length === 0) {
+        console.log("userArray2", userArray2);
+        response.send({'success': true, 'userArray': userArray2});
+        return userArray2;
+    }
+    var userHead = usernameArray.shift();
+    console.log("userHead", userHead);
+    User.findOne({username: userHead}, function(err, user) {
+        if (err) console.log("USER ERROR");
+        userArray2.push(user);
+        getUserArray(usernameArray, userArray2, response);
+    })
+}
+
+app.get("/getUser", function(request, response) {
+    User.findOne({current: true}, function(err, user) {
+        if (err) {
+            console.log("error 1");
+            response.send({'err': err, 'success': false});
+        } if (user) {
+            console.log("username", user.username);
+            response.send({'success': true, 'username': user.username});
+        } else {
+            console.log("error 2");
+            response.send({'err': "error", 'success': false});
+        }
+    })
+})
 
 app.post("/newEvent", function(request, response) {
     Groups.findOne({__id: request.body.group}, function(err, group) {
@@ -238,6 +296,10 @@ app.post("/newEvent", function(request, response) {
         if (group) {
             group.events.push({name: request.body.name,
                                 time: request.body.time});
+            group.save(function(err) {
+                if (err) response.send({'error': err});
+                response.send('success');
+            });
             response.send('success');
         }
     })
@@ -248,18 +310,31 @@ app.post("/newEvent", function(request, response) {
 });
 
 app.post("/updateLocation", function(request, response) {
-    var successful = false;
-    User.findOne({username: request.body.user}, function(err, user) {
-        if (err) throw err;
+    successful = false;
+    console.log(request.body.latitude);
+    //User.findOne({username: request.body.user}, function(err, user) {
+    User.findOne({current: true}, function(err, user) {
+        if (err) response.send({'error': err,});
+        //console.log("user", user);
         if (user) {
             user.lastLocation.lat = request.body.latitude;
             user.lastLocation.lon = request.body.longitude;
+            user.save(function(err) {
+                if (err) response.send({'error': err});
+                response.send('success');
+            });
             successful = true;
+            console.log("user", user);          
+        } else {
+            console.log("did not find user to update location", user);
         }
-    })
-  response.send({ 
-    success: successful
-  });
+
+    });
+    console.log(successful);
+    if (successful === true) {
+        console.log("updated");
+        //response.send({'success': undefined});
+    }
 });
 
 // update one item

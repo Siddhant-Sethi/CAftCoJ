@@ -72,7 +72,16 @@ var login = {
   }
 }
 
-
+function logoutPerson() {
+  $.ajax({
+    type: "get",
+    url: "/logout",
+    success: function() {
+      window.location.href = "index.html";
+    },
+    error: function() {console.log("error")}
+    });
+}
 
 
 var gmap = {
@@ -80,6 +89,9 @@ var gmap = {
     gmap.events = [];
     gmap.markerIndex = -1;
     gmap.loadScript();
+    $("#logoutButton").click(function() {
+      logoutPerson();
+    });
   },
 
   createNewPerson: function(latitude, longitude) {
@@ -89,16 +101,22 @@ var gmap = {
       mapTypeId: google.maps.MapTypeId.ROADMAP
     };
     var infowindow = new google.maps.InfoWindow({
+      //content: firstName + " " + lastName
       content: "<img src=kim-kardashian-huge-tits.jpeg width=304 height=228>"
     });
     gmap.map = new google.maps.Map(document.getElementById("map-canvas"),
         mapOptions);
     var image = 'person.png';
+    console.log("myshit", gmap.map.getCenter());
     var marker = new google.maps.Marker({
       position: gmap.map.getCenter(),
       map: gmap.map,
       icon: image,
     });
+
+    console.log(marker);
+
+    gmap.createOtherPeople(gmap.userArray);
 
     // google.maps.event.addListener(gmap.map, 'center_changed', function() {
     //   // 3 seconds after the center of the map has changed, pan back to the
@@ -118,19 +136,24 @@ var gmap = {
     google.maps.event.addListener(gmap.map, 'click', function(event) {
       gmap.placeMarker(event.latLng);
     });
+    gmap.updateLocation(latitude, longitude, function(){
+      console.log("failed to update your location in the server");
+    }, function() {
+      console.log("successfully updated your location in the server");
+    });
 
-    gmap.updateLocation(latitude, longitude);
   },
 
-  updateLocation: function(latitude, longitude) {
+updateLocation: function(latitude, longitude, onError, onSuccess) {
+  //console.log("this current user", currentUser);
     $.ajax({
     type: "post",
-    data: {user: login.user, latitude: latitude, longitude: longitude},
+    data: {user: currentUser, latitude: latitude, longitude: longitude},
     url: "/updateLocation",
     success: onSuccess,
     error: onError
     });
-  }
+  },
 
   placeMarker: function(location) {
       var marker = new google.maps.Marker({
@@ -139,6 +162,7 @@ var gmap = {
           id: gmap.markerIndex,
           content: "",
         });
+      console.log(marker);
       console.log("placemarker marker", marker);
       gmap.events.push(marker);
       gmap.map.panTo(marker.getPosition());
@@ -182,6 +206,15 @@ var gmap = {
     });
   },
 
+ getAllUsers: function(onSuccess, onError) {
+    $.ajax({
+    type: "get",
+    url: "/getAllUsers",
+    success: onSuccess,
+    error: onError
+    });
+  },
+
   popupEventAdder: function(marker) {
     var canvas = $("#map-canvas");
     canvas.css("height", "80%");
@@ -197,11 +230,57 @@ var gmap = {
   },
 
   loadPeople: function() {
-    console.log("comes to loadPeople");
+    gmap.getAllUsers(function(data){
+      gmap.userArray = data.userArray;
+      console.log("data.userArray ",data.userArray);
+      //gmap.createOtherPeople(data.userArray);
+    },
+    function() {
+      console.log("Error: event not added");
+    });
     navigator.geolocation.getCurrentPosition(function(position) {
-        console.log("cock");
         gmap.createNewPerson(position.coords.latitude, position.coords.longitude);
       });
+  },
+
+  createOtherPeople: function(userArray) {
+    console.log(userArray);
+    for (var i = 0; i <userArray.length; i++) {
+      var firstName = userArray[i].first;
+      var lastName = userArray[i].last;
+      
+      var lat = userArray[i].lastLocation.lat;
+      var lon = userArray[i].lastLocation.lon;
+      var lastLogin = userArray[i].lastLoginTimestamp;
+      console.log(lat, lon);
+
+      var infowindow = new google.maps.InfoWindow({
+        content: firstName + " " + lastName + "\n<br>" + "Last Login: " + lastLogin
+        //content: "<img src=kim-kardashian-huge-tits.jpeg width=304 height=228>"
+      });
+      var myLatLong = new google.maps.LatLng(lat, lon);
+      console.log("latlong", myLatLong);
+      var image = 'shit.png';
+      var marker = new google.maps.Marker({
+        position: myLatLong,
+        map: gmap.map,
+      });
+      console.log("marker", marker);
+      // google.maps.event.addListener(gmap.map, 'center_changed', function() {
+      //   // 3 seconds after the center of the map has changed, pan back to the
+      //   // marker.
+      //   window.setTimeout(function() {
+      //     gmap.map.panTo(marker.getPosition());
+      //   }, 3000);
+      // });
+
+      google.maps.event.addListener(marker, 'click', function() {
+        infowindow.open(gmap.map, this);
+        console.log("shit");
+        gmap.map.setZoom(8);
+      });
+      //gmap.placeMarker(marker.getPosition());
+    }
   },
 
   loadScript: function() {
@@ -229,6 +308,12 @@ function checkLocation() {
 }
 
 function manageState(state) {
+  if (state !== undefined) {
+    checkCurrentUser(function(data){
+      currentUser = data.username;
+      console.log("currentUser", currentUser);
+    }, function(){console.log("did not find user")});
+  }
   if (state === undefined) login.init();
   if (state === "map") gmap.init();
 }
@@ -236,6 +321,18 @@ function manageState(state) {
 $(document).ready(function() {
     itIsReady();
    });
+
+
+
+function checkCurrentUser(onSuccess, onError) {
+  $.ajax({
+    type: "get",
+    url: "/getUser",
+    success: onSuccess,
+    error: onError
+    });
+}
+
 
 function itIsReady () {
     var currentState = checkLocation();
