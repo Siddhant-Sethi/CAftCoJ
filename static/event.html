@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html> 
-  <head>
+	<head>
 	  <link href="reset.css" rel="stylesheet" type="text/css">
 	  <link href="style.css" rel="stylesheet" type="text/css">
 	  <link href='http://fonts.googleapis.com/css?family=Quicksand:400,700' rel='stylesheet' type='text/css'>
@@ -20,11 +20,122 @@
 			</div>
 			<div id="eventAdder" class = "content">
 		      <form id="form" action="javascript:gmap.addEvent()">
-		          <div class="groups_page">
-		            <h1 id='addEvent_title'>Groups :</h1>
+		          <div class="content">
+		            <h1 id='addEvent_title'>Add an Event :</h1>
 		            <label>
-		
-		               <input type="submit" value="Create New Group" />
+		               <span>Event Name :</span>
+		               <input type="text" class="text_input" name="name" id="name"/>
+		            </label>
+		            <label>
+		            	<span>Date :</span>
+		            	<input id="chooseDate" type="date" required name="dayOfEvent" />
+		            </label>
+		            <label>
+		               <span>Start Time :</span>
+		               <select>
+						  <option value="12:00 AM">12:00 AM</option>
+						  <option value="12:30 AM">12:30 AM</option>
+		               	  <option value="1:00 AM">1:00 AM</option>
+						  <option value="1:30 AM">1:30 AM</option>
+						  <option value="2:00 AM">2:00 AM</option>
+						  <option value="2:30 AM">2:30 AM</option>
+						  <option value="3:00 AM">3:00 AM</option>
+						  <option value="3:30 AM">3:30 AM</option>
+						  <option value="4:00 AM">4:00 AM</option>
+						  <option value="4:30 AM">4:30 AM</option>
+						  <option value="5:00 AM">5:00 AM</option>
+						  <option value="5:30 AM">5:30 AM</option>
+						  <option value="6:00 AM">6:00 AM</option>
+						  <option value="6:30 AM">6:30 AM</option>
+						  <option value="7:00 AM">7:00 AM</option>
+						  <option value="7:30 AM">7:30 AM</option>
+						  <option value="8:00 AM">8:00 AM</option>
+						  <option value="8:30 AM">8:30 AM</option>
+						  <option value="9:00 AM">9:00 AM</option>
+						  <option value="9:30 AM">9:30 AM</option>
+						  <option value="10:00 AM">10:00 AM</option>
+						  <option value="10:30 AM">10:30 AM</option>
+						  <option value="11:00 AM">11:00 AM</option>
+						  <option value="11:30 AM">11:30 AM</option>
+						  <option value="12:00 PM">12:00 PM</option>
+						  <option value="12:30 PM">12:30 PM</option>
+		               	  <option value="1:00 PM">1:00 PM</option>
+						  <option value="1:30 PM">1:30 PM</option>
+						  <option value="2:00 PM">2:00 PM</option>
+						  <option value="2:30 PM">2:30 PM</option>
+						  <option value="3:00 PM">3:00 PM</option>
+						  <option value="3:30 PM">3:30 PM</option>
+						  <option value="4:00 PM">4:00 PM</option>
+						  <option value="4:30 PM">4:30 PM</option>
+						  <option value="5:00 PM">5:00 PM</option>
+						  <option value="5:30 PM">5:30 PM</option>
+						  <option value="6:00 PM">6:00 PM</option>
+						  <option value="6:30 PM">6:30 PM</option>
+						  <option value="7:00 PM">7:00 PM</option>
+						  <option value="7:30 PM">7:30 PM</option>
+						  <option value="8:00 PM">8:00 PM</option>
+						  <option value="8:30 PM">8:30 PM</option>
+						  <option value="9:00 PM">9:00 PM</option>
+						  <option value="9:30 PM">9:30 PM</option>
+						  <option value="10:00 PM">10:00 PM</option>
+						  <option value="10:30 PM">10:30 PM</option>
+						  <option value="11:00 PM">11:00 PM</option>
+						  <option value="11:30 PM">11:30 PM</option>
+						  </select>
+		             </label>
+		             <label>
+		               <span>End Time :</span>
+		               <select>
+						  <option value="12:00 AM">12:00 AM</option>
+						  <option value="12:30 AM">12:30 AM</option>
+		               	  <option value="1:00 AM">1:00 AM</option>
+						  <option value="1:30 AM">1:30 AM</option>
+						  <option value="2:00 AM">2:00 AM</option>
+						  <option value="2:30 AM">2:30 AM</option>
+						  <option value="3:00 AM">3:00 AM</option>
+						  <option value="3:30 AM">3:30 AM</option>
+						  <option value="4:00 AM">4:00 AM</option>
+						  <option value="4:30 AM">4:30 AM</option>
+						  <option value="5:00 AM">5:00 AM</option>
+						  <option value="5:30 AM">5:30 AM</option>
+						  <option value="6:00 AM">6:00 AM</option>
+						  <option value="6:30 AM">6:30 AM</option>
+						  <option value="7:00 AM">7:00 AM</option>
+						  <option value="7:30 AM">7:30 AM</option>
+						  <option value="8:00 AM">8:00 AM</option>
+						  <option value="8:30 AM">8:30 AM</option>
+						  <option value="9:00 AM">9:00 AM</option>
+						  <option value="9:30 AM">9:30 AM</option>
+						  <option value="10:00 AM">10:00 AM</option>
+						  <option value="10:30 AM">10:30 AM</option>
+						  <option value="11:00 AM">11:00 AM</option>
+						  <option value="11:30 AM">11:30 AM</option>
+						  <option value="12:00 PM">12:00 PM</option>
+						  <option value="12:30 PM">12:30 PM</option>
+		               	  <option value="1:00 PM">1:00 PM</option>
+						  <option value="1:30 PM">1:30 PM</option>
+						  <option value="2:00 PM">2:00 PM</option>
+						  <option value="2:30 PM">2:30 PM</option>
+						  <option value="3:00 PM">3:00 PM</option>
+						  <option value="3:30 PM">3:30 PM</option>
+						  <option value="4:00 PM">4:00 PM</option>
+						  <option value="4:30 PM">4:30 PM</option>
+						  <option value="5:00 PM">5:00 PM</option>
+						  <option value="5:30 PM">5:30 PM</option>
+						  <option value="6:00 PM">6:00 PM</option>
+						  <option value="6:30 PM">6:30 PM</option>
+						  <option value="7:00 PM">7:00 PM</option>
+						  <option value="7:30 PM">7:30 PM</option>
+						  <option value="8:00 PM">8:00 PM</option>
+						  <option value="8:30 PM">8:30 PM</option>
+						  <option value="9:00 PM">9:00 PM</option>
+						  <option value="9:30 PM">9:30 PM</option>
+						  <option value="10:00 PM">10:00 PM</option>
+						  <option value="10:30 PM">10:30 PM</option>
+						  <option value="11:00 PM">11:00 PM</option>
+						  <option value="11:30 PM">11:30 PM</option>
+						  </select>
+		               <input type="submit" value="Submit Form" />
 		            </label>     
 		         </div>       
 		    	</form>
