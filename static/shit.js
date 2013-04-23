@@ -92,6 +92,12 @@ var gmap = {
     $("#logoutButton").click(function() {
       logoutPerson();
     });
+    gmap.getGroupEvents(function(data) {
+      gmap.serverEvents = data.events;
+      console.log("got events from server:", gmap.serverEvents);
+    }, function() {
+      console.log("could not get events from server");
+    });
   },
 
   createNewPerson: function(latitude, longitude) {
@@ -144,18 +150,50 @@ var gmap = {
     });
 
     gmap.createOtherPeople(gmap.userArray);
-    
+    gmap.createGroupEvents(gmap.serverEvents);
+
+
   },
 
-updateLocation: function(latitude, longitude, onError, onSuccess) {
-    console.log("this current user", userString);
+  createGroupEvents: function(events) {
+    for (var i = 0; i < events.length; i++) {
+      var myLatLong = new google.maps.LatLng(events[i].lat, events[i].lon);
+      var marker = new google.maps.Marker({
+          position: myLatLong,
+          map: gmap.map,
+          content: "",
+        });
+
+      var infowindow = new google.maps.InfoWindow({
+        content: "Event Name: " + events[i].name + "\n<br>Time: " + events[i].time + "\n<br>Created: " + events[i].created
+      });
+
+      google.maps.event.addListener(marker, 'click', function() {
+        infowindow.open(gmap.map, this);
+        //gmap.map.setZoom(8);
+        gmap.map.panTo(marker.getPosition());
+      });
+    }
+  },
+
+  getGroupEvents: function(onSuccess, onError) {
     $.ajax({
-    type: "post",
-    data: {user: userString, latitude: latitude, longitude: longitude},
-    url: "/updateLocation",
-    success: onSuccess,
-    error: onError
-    });
+      type: "get",
+      url: "/getEvents",
+      success: onSuccess,
+      error: onError
+      });
+  },
+
+  updateLocation: function(latitude, longitude, onError, onSuccess) {
+      console.log("this current user", userString);
+      $.ajax({
+      type: "post",
+      data: {user: userString, latitude: latitude, longitude: longitude},
+      url: "/updateLocation",
+      success: onSuccess,
+      error: onError
+      });
   },
 
   placeMarker: function(location) {
@@ -165,8 +203,8 @@ updateLocation: function(latitude, longitude, onError, onSuccess) {
           id: gmap.markerIndex,
           content: "",
         });
-      console.log(marker);
-      console.log("placemarker marker", marker);
+      //console.log(marker);
+      //console.log("placemarker marker", marker);
       gmap.events.push(marker);
       gmap.map.panTo(marker.getPosition());
       gmap.popupEventAdder(marker);
@@ -175,11 +213,15 @@ updateLocation: function(latitude, longitude, onError, onSuccess) {
 
   addEvent: function() {
     var marker = gmap.events[gmap.markerIndex];
+    var pos = marker.getPosition();
+    //var position = JSON.parse.(pos);
+    console.log("markerPos:", pos.jb);
     var infowindow = new google.maps.InfoWindow();
     console.log("addevent marker", marker);
     console.log(gmap.events);
     console.log(marker.id);
-    marker.content = "Event Name: " + $("#name").val() + "\n<br>Time: " + $("#time").val();
+    var date = new Date();
+    marker.content = "Event Name: " + $("#name").val() + "\n<br>Time: " + $("#time").val() + "\n<br>Created: " + date;
     infowindow.setContent(marker.content);
     //gmap.map.setCenter(marker.getPosition());
     //infowindow.open(gmap.map, this);
@@ -189,7 +231,8 @@ updateLocation: function(latitude, longitude, onError, onSuccess) {
     });
     gmap.revertEventAdder();
 
-    var newEvent = {name: $("#name").val(), time: $("#time").val(), group: undefined}
+    var newEvent = {name: $("#name").val(), time: $("#time").val(), 
+                    group: 'default', lat: pos.jb, lon: pos.kb, created: date}
 
     gmap.addEventToServer(newEvent, function(){
       console.log("Event added to group");

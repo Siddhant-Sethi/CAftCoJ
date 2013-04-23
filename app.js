@@ -32,6 +32,7 @@ var http = require('http');
 var mongoose = require('mongoose');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
+var Groups = require('./Groups');
 
 init();
 
@@ -51,13 +52,16 @@ function init(){
     http.createServer(app).listen(3000, function() {
         console.log("Express server listening on port %d", 3000);
     });
-
-    Groups = createGroup("default", []);
+    Groups.findOne({name: 'default'}, function(err, group) {
+        console.log("GROUP", group);
+        if (!group) createGroup("default", []);
+    })
+    
     //console.log("Groups", Groups);
 }
 
 function createGroup(name, users) {
-    var Groups = require('./Groups');
+    
     var defaultGroup = new Groups({name: name, users: users});
     defaultGroup.registeredTimestamp = new Date();
     defaultGroup.save(function(err) {
@@ -70,7 +74,7 @@ function createGroup(name, users) {
             throw err;
         console.log("this is her :",doc);
     });
-    return Groups;
+    
 
     // User.find().each(function(err, doc){
     //     console.log("users:", doc);
@@ -256,7 +260,8 @@ app.get("/getAllUsers", function(request, response){
     //response.send({'success': true, 'userArray': userArray});
 
 });
-//var globalUserArray;
+
+
 
 function getUserArray(usernameArray, userArray2, response) {
     userArray2 = userArray2;
@@ -275,6 +280,27 @@ function getUserArray(usernameArray, userArray2, response) {
     })
 }
 
+// get events in group
+app.get("/getEvents", function(request, response){
+    Groups.findOne({name: "default"}, function(err, group) {
+        if (err) {
+            console.log("GROUP ERROR");
+            response.send({'error': err});
+            //successful = false;
+        }
+        if (group) {
+            //console.log("group[0].users", group[0].users);
+            var events = group.events;
+            response.send({'success': true, 'events': events});
+            //console.log("THISuserArray", userArray);
+            
+            }
+    });
+    //response.send({'success': true, 'userArray': userArray});
+
+});
+
+
 app.get("/getUser", function(request, response) {
     User.findOne({current: true}, function(err, user) {
         if (err) {
@@ -291,18 +317,26 @@ app.get("/getUser", function(request, response) {
 })
 
 app.post("/newEvent", function(request, response) {
-    Groups.findOne({__id: request.body.group}, function(err, group) {
+    //console.log("group name", request.body.group);
+    Groups.findOne({name: request.body.group}, function(err, group) {
         if (err) response.send('error');
         if (group) {
             group.events.push({name: request.body.name,
-                                time: request.body.time});
+                                time: request.body.time,
+                                lat: request.body.lat, 
+                                lon: request.body.lon,
+                                created: request.body.created});
             group.save(function(err) {
                 if (err) response.send({'error': err});
                 response.send('success');
             });
             response.send('success');
         }
+        Groups.find({}, function(err, group) {
+            console.log("group", group);
+        });
     })
+    
   // response.send({ 
   //   event: event,
   //   success: successful
@@ -336,9 +370,6 @@ app.post("/updateLocation", function(request, response) {
         console.log("updated");
         //response.send({'success': undefined});
     }
-    User.find({}, function(err, user){
-        console.log("all users:", user);
-    })
 
 });
 
