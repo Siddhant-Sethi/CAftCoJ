@@ -14,8 +14,11 @@ var login = {
     login.loginServer(newlogin, 
                  function success(data){
                     //alert(JSON.stringify(data));
+                    localStorage.user = user.val();
                     login.user = user.val();
-                    window.location.href = 'map.html#' + encodeURI(user.val());
+                    $('#login').css({'display': 'none'});
+                    $('#groups').css({'display': 'block'});
+                    //window.location.href = 'groups.html#' + encodeURI(user.val());
                 },
                 function error(xhr, status, err){
                     alert(JSON.stringify(err));
@@ -52,7 +55,9 @@ var login = {
       login.addUser(newUser, 
                 function success(data){
                     //alert(JSON.stringify(data));
-                    window.location.href = 'map.html#' + encodeURI(user.val());
+                    $('#login').css({'display': 'none'});
+                    $('#groups').css({'display': 'block'});
+                    //window.location.href = 'groups.html#' + encodeURI(user.val());
                 },
                 function error(xhr, status, err){
                     alert(JSON.stringify(err));
@@ -83,6 +88,45 @@ function logoutPerson() {
     });
 }
 
+var groups = {
+  init: function() {
+
+  },
+  newGroup: function() {
+      $('#groups').css({'display': 'none'});
+      $('#addgroup').css({'display': 'block'});
+     //window.location.href = 'addgroup.html#' + encodeURI(userString);
+
+  }
+}
+
+var addgroup = {
+  init: function() {
+    gmap.getAllUsers(function(data){
+      addgroup.userArray = data.userArray;
+      console.log("data.userArray ",data.userArray);
+      addgroup.displayUsers();
+      //gmap.createOtherPeople(data.userArray);
+    },
+    function() {
+      console.log("Error: Did not get users from default group");
+    });
+  },
+
+  displayUsers: function() {
+    var a = addgroup.userArray;
+    var container = $("#listOfUsers");
+    for (var i = 0; i < a.length; i++) {
+      var userDiv = $("<div>");
+      userDiv.html()
+    }
+  },
+
+  createNewGroup: function() {    
+      window.location.href = 'map.html#' + encodeURI(localStorage.user);
+  }
+
+}
 
 var gmap = {
   init: function() {
@@ -165,7 +209,8 @@ var gmap = {
         });
 
       var infowindow = new google.maps.InfoWindow({
-        content: "Event Name: " + events[i].name + "\n<br>Time: " + events[i].time + "\n<br>Created: " + events[i].created
+        content: "Event Name: " + events[i].name + "\n<br>Start Time: " + events[i].start 
+                      + "\n<br>End Time: " + events[i].end + "\n<br>Date: " + events[i].date + "\n<br>Created: " + events[i].created
       });
 
       google.maps.event.addListener(marker, 'click', function() {
@@ -189,7 +234,7 @@ var gmap = {
       console.log("this current user", userString);
       $.ajax({
       type: "post",
-      data: {user: userString, latitude: latitude, longitude: longitude},
+      data: {user: localStorage.user, latitude: latitude, longitude: longitude},
       url: "/updateLocation",
       success: onSuccess,
       error: onError
@@ -207,31 +252,38 @@ var gmap = {
       //console.log("placemarker marker", marker);
       gmap.events.push(marker);
       gmap.map.panTo(marker.getPosition());
-      gmap.popupEventAdder(marker);
+      //gmap.popupEventAdder(marker);
       gmap.markerIndex = gmap.markerIndex + 1;
+      $('#event').css({'display': 'block'});
+      $('#map-canvas').css({'display': 'none'});
+      //window.location.href = 'event.html#' + encodeURI(userString) + "$" + JSON.stringify(marker.getPosition());
   },
 
   addEvent: function() {
+    //gmap.getMarkerPosition();
+    //console.log(gmap.events);
+    //var position = JSON.parse.(pos);
+    //console.log("markerPos:", pos.jb);
+    // console.log("addevent marker", marker);
+    // console.log(gmap.events);
+    // console.log(marker.id);
     var marker = gmap.events[gmap.markerIndex];
     var pos = marker.getPosition();
-    //var position = JSON.parse.(pos);
-    console.log("markerPos:", pos.jb);
-    var infowindow = new google.maps.InfoWindow();
-    console.log("addevent marker", marker);
-    console.log(gmap.events);
-    console.log(marker.id);
     var date = new Date();
-    marker.content = "Event Name: " + $("#name").val() + "\n<br>Time: " + $("#time").val() + "\n<br>Created: " + date;
-    infowindow.setContent(marker.content);
+    var infowindow = new google.maps.InfoWindow({
+          content: "Event Name: " + $("#name").val() + "\n<br>Start Time: " + $("#start").val() 
+                      + "\n<br>End Time: " + $("#end").val() + "\n<br>Date: " + $("#chooseDate").val() + "\n<br>Created: " + date
+    });
+    //infowindow.setContent(marker.content);
     //gmap.map.setCenter(marker.getPosition());
     //infowindow.open(gmap.map, this);
     google.maps.event.addListener(gmap.events[gmap.markerIndex], 'click', function() {
       infowindow.open(gmap.map, this);
       gmap.map.setCenter(marker.getPosition());
     });
-    gmap.revertEventAdder();
+    //gmap.revertEventAdder();
 
-    var newEvent = {name: $("#name").val(), time: $("#time").val(), 
+    var newEvent = {name: $("#name").val(), start: $("#start").val(), end: $('#end').val(), date: $("#chooseDate").val(),
                     group: 'default', lat: pos.jb, lon: pos.kb, created: date}
 
     gmap.addEventToServer(newEvent, function(){
@@ -240,7 +292,21 @@ var gmap = {
     function() {
       console.log("Error: event not added");
     });
+    $('#event').css({'display': 'none'});
+    $('#map-canvas').css({'display': 'block'});
+    window.location.href = 'map.html#' + encodeURI(userString);
+
   },
+
+  // getMarkerPosition: function() {
+  //   var indexjb = window.location.href.indexOf('"jb"');
+  //   var indexkb = window.location.href.indexOf('"kb"');
+  //   var indexEnd = window.location.href.indexOf('}');
+  //   var lat = JSON.parse(window.location.href.slice(indexjb+5, indexkb-1));
+  //   var lon = JSON.parse(window.location.href.slice(indexkb+5, indexEnd));
+  //   gmap.eventMarkerLocation = new google.maps.LatLng(lat, lon);
+  //   console.log(lat, lon);
+  // },
 
   addEventToServer: function(data, onSuccess, onError) {
     $.ajax({
@@ -282,7 +348,7 @@ var gmap = {
       //gmap.createOtherPeople(data.userArray);
     },
     function() {
-      console.log("Error: event not added");
+      console.log("Error: Did not get users from group");
     });
     navigator.geolocation.getCurrentPosition(function(position) {
         gmap.createNewPerson(position.coords.latitude, position.coords.longitude);
@@ -292,7 +358,7 @@ var gmap = {
   createOtherPeople: function(userArray) {
     console.log(userArray);
     for (var i = 0; i <userArray.length; i++) {
-      if (userArray[i].username === userString) continue;
+      if (userArray[i].username === localStorage.user) continue;
       var firstName = userArray[i].first;
       var lastName = userArray[i].last;
       
@@ -344,7 +410,7 @@ var gmap = {
 
 function checkLocation() {
   var pathname = window.location.pathname;
-  var pages = ["map"];
+  var pages = ["map", "groups", "addgroup", "event"];
   var currentState = undefined;
   for (i = 0; i < pages.length; i++) {
     if (pathname.indexOf(pages[i]) !== -1) {
@@ -359,6 +425,9 @@ function manageState(state) {
   }
   if (state === undefined) login.init();
   if (state === "map") gmap.init();
+  if (state === "groups") groups.init();
+  if (state === "addgroup") addgroup.init();
+  if (state === "event") gmap.getMarkerPosition();
 }
 
 $(document).ready(function() {
