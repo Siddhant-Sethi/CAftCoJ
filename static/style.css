@@ -5,8 +5,8 @@ html	{
 
 body {
 	font-family: 'Quicksand', sans-serif;
-	background-color: #0B6121;
-	height: 100%;
+/*	background-color: #0B6121;
+*/	height: 100%;
 }
 
 .pop_up {
@@ -15,7 +15,7 @@ body {
 
 .true {
 	background-color: #99FFCC;
-	
+
 }
 
 .userEntry {
@@ -180,5 +180,102 @@ h1	{
 #event {
 	display: none;
 }
+
+#chat {
+	display: none;
+	height: 100%;
+}
+
+/*Chat Page*/
+
+#chatWidget {
+    width: 600px;
+    height: 100%;
+    margin: 0px auto;
+    border-style: ridge;
+    border-width: 1px;  
+    border-color: #00CC99;
+    position: relative;
+}
+
+#enterContainer {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+}
+
+.chatEntry {
+	display: block;
+}
+
+.center {
+    width: 100%;
+    margin: 0px auto;
+}
+
+#chatform {
+    width: 100%;
+}
+
+#chatBar {
+	height: 30px;
+	background-color: #00CC66;
+	padding-top: 5px;
+	position: relative;
+}
+
+.chatBarButton {
+	background-color: #00CC66;
+	height: 30px;
+	display: inline;
+}
+
+#goToMap {
+	float: right;
+}
+
+#chatBarTitle {
+	height: 30px;
+	text-align: center;
+	font-weight: bold;
+	display: inline;
+	margin-left: 150px;
+	margin-right: 150px;
+}
+
+#messagesContainer {
+    height: 85%;
+    overflow-y: scroll;
+}
+
+.entry {
+    border-style: solid;
+    border-bottom-width: 1px;  
+    border-color: #909090;
+}
+
+.floatRight {
+    float: right;
+}
+
+.floatLeft {
+    float: left;
+}
+
+#input {
+    width: 88%;
+    max-height: 200px;
+}
+
+#enterMessage {
+    width: 90%;
+    margin: auto;
+}
+
+#sendButton {
+    float: right;
+}
+
+
 
 

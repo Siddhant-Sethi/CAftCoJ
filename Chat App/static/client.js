@@ -1,6 +1,6 @@
 var chat = {
 	initSocket: function() {
-		chat.socket = io.connect("http://128.237.196.29:8888");
+		chat.socket = io.connect("http://localhost:8888");
 		$('#input').keydown(function() {
 	        if (event.keyCode == 13) {
 	            chat.sendMessageClick();

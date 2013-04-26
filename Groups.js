@@ -6,6 +6,7 @@ var Groups = new Schema({
     name: String,
     users: Array,
     events: Array,
+    chat: Array,
     registeredTimestamp: Date
 });
 

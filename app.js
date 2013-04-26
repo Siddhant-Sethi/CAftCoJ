@@ -14,12 +14,12 @@ var express = require("express");
 
 var io = require('socket.io').listen(8888);
 io.sockets.on('connection', function(socket) {
-    console.log("connected!");
-    getClients();
-	socket.on("msg", function(data) {
-		socket.emit('status', {success: 'true'});
-		io.sockets.emit('newmsg', {body: data.body});
-	});
+    socket.on("msg", function(data) {
+        socket.emit('status', {success: 'true'});
+        socket.broadcast.emit('newmsg', data);
+        //console.log("data.date", typeof(data.date));
+        //console.log("new date", typeof(new Date()));
+    });
 });
 
 // ========================
@@ -348,6 +348,7 @@ app.post("/getGroups", function(request, response) {
     User.findOne({username: request.body.user}, function(err, user) {
         if (err) {
             response.send({"error": "could not find user"});
+            throw err;
         }
         var grpIDs = user.groups;
         var objArr = [];
@@ -374,6 +375,16 @@ function getGroupObjects(objArr, grpIDs, onSuccess, onError) {
         getGroupObjects(objArr, grpIDs, onSuccess, onError);
     })
 }
+
+app.post("/getGroup", function(request, response) {
+    Groups.findOne({_id: request.body.id}, function(err, group) {
+        if (err) {
+            response.send({"error": "could not find user"});
+            throw err;
+        }
+        response.send({"success": true, "group": group});
+    });
+});
 
 // update one item
 app.put("/database/event", function(request, response){
