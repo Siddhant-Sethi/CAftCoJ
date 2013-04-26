@@ -55,6 +55,7 @@ var login = {
       login.addUser(newUser, 
                 function success(data){
                     //alert(JSON.stringify(data));
+                    localStorage.user = user.val();
                     $('#login').css({'display': 'none'});
                     $('#groups').css({'display': 'block'});
                     //window.location.href = 'groups.html#' + encodeURI(user.val());
@@ -123,7 +124,7 @@ var addgroup = {
   },
 
   createNewGroup: function() {    
-      window.location.href = 'map.html#' + encodeURI(localStorage.user);
+      window.location.href = 'map.html';
   }
 
 }
@@ -183,7 +184,7 @@ var gmap = {
       gmap.map.panTo(marker.getPosition());
     });
 
-    google.maps.event.addListener(gmap.map, 'click', function(event) {
+    google.maps.event.addListener(gmap.map, 'dblclick', function(event) {
       gmap.placeMarker(event.latLng);
     });
     console.log("comes here");
@@ -231,7 +232,7 @@ var gmap = {
   },
 
   updateLocation: function(latitude, longitude, onError, onSuccess) {
-      console.log("this current user", userString);
+      console.log("this current user", localStorage.user);
       $.ajax({
       type: "post",
       data: {user: localStorage.user, latitude: latitude, longitude: longitude},
@@ -251,7 +252,7 @@ var gmap = {
       //console.log(marker);
       //console.log("placemarker marker", marker);
       gmap.events.push(marker);
-      gmap.map.panTo(marker.getPosition());
+      //gmap.map.panTo(marker.getPosition());
       //gmap.popupEventAdder(marker);
       gmap.markerIndex = gmap.markerIndex + 1;
       $('#event').css({'display': 'block'});
@@ -279,7 +280,7 @@ var gmap = {
     //infowindow.open(gmap.map, this);
     google.maps.event.addListener(gmap.events[gmap.markerIndex], 'click', function() {
       infowindow.open(gmap.map, this);
-      gmap.map.setCenter(marker.getPosition());
+      gmap.map.panTo(marker.getPosition());
     });
     //gmap.revertEventAdder();
 
@@ -294,7 +295,7 @@ var gmap = {
     });
     $('#event').css({'display': 'none'});
     $('#map-canvas').css({'display': 'block'});
-    window.location.href = 'map.html#' + encodeURI(userString);
+    window.location.href = 'map.html';
 
   },
 
@@ -358,6 +359,7 @@ var gmap = {
   createOtherPeople: function(userArray) {
     console.log(userArray);
     for (var i = 0; i <userArray.length; i++) {
+      console.log(userArray[i].username, localStorage.user);
       if (userArray[i].username === localStorage.user) continue;
       var firstName = userArray[i].first;
       var lastName = userArray[i].last;
