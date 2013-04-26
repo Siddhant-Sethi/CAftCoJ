@@ -54,22 +54,32 @@ function init(){
     });
     Groups.findOne({name: 'default'}, function(err, group) {
         console.log("GROUP", group);
-        if (!group) createGroup("default", []);
+        if (!group) {
+            createGroup("default", [], function(id) {
+            console.log("added default group to server! ID = ", id);
+        }, function() {
+            console.log("could not add default group to server");
+        });
+        }
     })
     
     //console.log("Groups", Groups);
 }
 
-function createGroup(name, users) {
+function createGroup(name, users, onSuccess, onError) {
     
     var defaultGroup = new Groups({name: name, users: users});
     defaultGroup.registeredTimestamp = new Date();
     defaultGroup.save(function(err) {
-        if (err) throw err;
+        console.log("ID!!!!! ONE", defaultGroup._id);
+        console.log("defaultGroup", defaultGroup);
+        if (err) onError();
+        else onSuccess(defaultGroup._id);
+        
     });
     //Groups.insert(defaultGroup);
     
-    Groups.findOne({}, function(err, doc) {
+    Groups.find({}, function(err, doc) {
         if (err)
             throw err;
         console.log("this is her :",doc);
@@ -121,87 +131,6 @@ function checkForAndCreateRootUser(User){
         });  
     });
 }
-
-
-
-
-// var mongo = require('mongodb');
-// var host = 'localhost';
-// var port = mongo.Connection.DEFAULT_PORT;
-
-// var optionsWithEnableWriteAccess = { w: 1 };
-// var dbName = 'db';
-
-// var client = new mongo.Db(
-//     dbName,
-//     new mongo.Server(host, port),
-//     optionsWithEnableWriteAccess
-// );
-
-// function openDb(onDbOpen){
-//     client.open(onDbReady);
-
-//     function onDbReady(error){
-//         if (error)
-//             throw error;
-
-
-//         client.collection('userCollection', onUserCollectionReady);
-        
-//     }
-
-//     function onUserCollectionReady(error, userCollection){
-//         if (error)
-//             throw error;
-
-//         onDbOpen(userCollection);
-        
-//         // client.userCollection.insert({w: 1});
-//         // client.userCollection.find().each(function(err, result) {
-//         //     if (error) throw error;
-//         //     console.log("result", result);
-//         // })
-//     }
-// }
-
-// function closeDb(){
-//     client.close();
-// }
-
-// function initServer() {
-//     openDb(onDbOpen);
-
-// }
-
-
-// initServer();
-
-
-// function onDbOpen(collection){
-//     insertUserDocuments(collection, onUserDocumentsInserted);
-// }
-
-// function onUserDocumentsInserted(err, collection){
-//     if (err)
-//         throw err;
-//     console.log('documents inserted!');
-//     //console.log("client:", client);
-//     collection.find().toArray(function(err, result) {
-//             if (error) throw error;
-//             console.log(result);
-//         })
-//     closeDb();
-// }
-
-// function insertUserDocuments(collection, done){
-
-//     collection.insert({n: 1}, function(err){
-//         console.log("hey");
-//         done(err, collection);
-//         console.log("after");
-//         return;
-//     });
-// }
 
 
 
@@ -345,6 +274,46 @@ app.post("/newEvent", function(request, response) {
   // });
 });
 
+app.post("/addgroup", function(request, response) {
+    createGroup(request.body.name, request.body.users, function(id) {
+        console.log("ID!!!!! TWO", id);
+        var a = request.body.users;
+        addGroupID(a, id, function() {
+            response.send({'error': true});
+        }, function() {
+            response.send({'success': true});
+        });
+    }, function() {
+        response.send({'error': true});
+    })
+});
+
+function addGroupID(users, id, onError, done) {
+    if (users.length === 0) {
+        done();
+        return;
+    }
+    var user = users.shift();
+    console.log("ID!!!!! THREE", id);
+    User.findOne({username: user}, function(err, u) {
+        if (err) {
+            console.log("could not find user: ", user);
+            onError();
+            return;
+        }
+        u.groups.push(id);
+        u.save(function(error) {
+            if (err) {
+                console.log("could not save");
+                onError();
+                return;
+            }
+        })
+        addGroupID(users, id, onError, done);
+    });
+
+}
+
 app.post("/updateLocation", function(request, response) {
     successful = false;
     console.log("request.body.latitude", request.body.latitude);
@@ -374,6 +343,37 @@ app.post("/updateLocation", function(request, response) {
     }
 
 });
+
+app.post("/getGroups", function(request, response) {
+    User.findOne({username: request.body.user}, function(err, user) {
+        if (err) {
+            response.send({"error": "could not find user"});
+        }
+        var grpIDs = user.groups;
+        var objArr = [];
+        getGroupObjects(objArr, grpIDs, function(a) {
+            response.send({"success": a});
+        }, function() {
+            response.send({"error": "could not get groups that user had in his groups array"});
+        })
+    });
+}); 
+
+function getGroupObjects(objArr, grpIDs, onSuccess, onError) {
+    if (grpIDs.length === 0) {
+        onSuccess(objArr);
+        return;
+    }
+    var thisID = grpIDs.shift();
+    Groups.findOne({_id: thisID}, function(err, group) {
+        if (err) {
+            onError();
+            return;
+        }
+        objArr.push(group);
+        getGroupObjects(objArr, grpIDs, onSuccess, onError);
+    })
+}
 
 // update one item
 app.put("/database/event", function(request, response){

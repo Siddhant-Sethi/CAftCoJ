@@ -77,10 +77,11 @@
 		      <form id="form" action="javascript:groups.newGroup()">
 		          <div class="groups_page">
 		            <h1 id='addEvent_title'>Groups :</h1>
-		            <label>
+		       		<ul id="listOfGroups">
+		       		</ul>
 		
 		               <input type="submit" value="Create New Group" />
-		            </label>     
+		                
 		         </div>       
 		    	</form>
 			</div>
@@ -100,12 +101,18 @@
 		      <form id="form" action="javascript:addgroup.createNewGroup()">
 		          <div class="groups_page">
 		            <h1 id='addEvent_title'>New Group :</h1>
-		            <div id="listOfUsers"></div>
+		            <input id="groupName" type="text" value="" placeholder="Group Name"/>
+		            <div id="listOfUsersDiv">
+		            	<ul id="listOfUsers">
+		            	</ul>
+		            </div>
 		            <label>
 		               <input type="submit" value="Create New Group" />
+
 		            </label>     
 		         </div>       
 		    	</form>
+		    	<button id="backButton" type="button" > Back </button>
 			</div>
 		</div>
 		</div>

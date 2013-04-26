@@ -13,6 +13,19 @@ body {
 	height: 0;
 }
 
+.true {
+	background-color: #99FFCC;
+	
+}
+
+.userEntry {
+	background-color: #99FFFF;
+	border-style: solid;
+	border-bottom: 1px;
+	border-bottom-color: green;
+	display: block;
+}
+
 #map-canvas {
 	height: 100%;
 }

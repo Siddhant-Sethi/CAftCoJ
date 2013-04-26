@@ -1,7 +1,7 @@
 
 var login = {
   init: function() {
-
+    $('#login').css({'display': 'block'});
   },
 
   login: function() {
@@ -15,9 +15,10 @@ var login = {
                  function success(data){
                     //alert(JSON.stringify(data));
                     localStorage.user = user.val();
-                    login.user = user.val();
+                    //login.user = user.val();
                     $('#login').css({'display': 'none'});
                     $('#groups').css({'display': 'block'});
+                    groups.init();
                     //window.location.href = 'groups.html#' + encodeURI(user.val());
                 },
                 function error(xhr, status, err){
@@ -91,22 +92,71 @@ function logoutPerson() {
 
 var groups = {
   init: function() {
-
+    groups.getGroups(function(groupsArray) {
+      console.log("Got groups Array!:", groupsArray);
+      groups.displayGroups(groupsArray.success);
+    }, function(err) {
+      console.log("Could not get user's groups from server because: ", JSON.stringify(err));
+    });
   },
-  newGroup: function() {
-      $('#groups').css({'display': 'none'});
-      $('#addgroup').css({'display': 'block'});
-     //window.location.href = 'addgroup.html#' + encodeURI(userString);
 
+  displayGroups: function(grps) {
+    var container = $("#listOfGroups");
+    for (var i = 0; i < grps.length; i++) {
+      console.log(container);
+      var li = $("<li>");
+      //li[0].id = a[i].username;
+      li.addClass("groupEntry");
+      var nameDiv = $("<div>");
+      nameDiv.html(grps[i].name);
+      nameDiv.css("padding", "10px");
+      nameDiv.css("font-size", "27px");
+      li.append(nameDiv);
+      li.mousedown(function() {
+        $(this).css("background-color", "#99FFCC");
+      });
+      li.mouseup(function() {
+        $(this).css("background-color", "#FFFFFF");
+        // if ($(this)[0].className.indexOf("true") !== -1) {
+        //   $(this).removeClass("true");
+        //   $(this).css("background-color", "#99FFFF");
+        // }
+        // else {
+        //   $(this).addClass("true");
+        //   $(this).css("background-color", "#99FFCC"); 
+        // }
+      });
+      container.append(li);
+    }
+  },
+
+  newGroup: function() {
+    console.log("it came here");
+    $('#groups').css({'display': 'none'});
+    $('#addgroup').css({'display': 'block'});
+    addgroup.init();
+  },
+
+  getGroups: function(onSuccess, onError) {
+    $.ajax({
+      type: "post",
+      data: {user: localStorage.user},
+      url: "/getGroups",
+      success: onSuccess,
+      error: onError
+      });
   }
+
 }
 
 var addgroup = {
   init: function() {
+    
     gmap.getAllUsers(function(data){
       addgroup.userArray = data.userArray;
       console.log("data.userArray ",data.userArray);
       addgroup.displayUsers();
+      $("#backButton").dblclick(addgroup.back());
       //gmap.createOtherPeople(data.userArray);
     },
     function() {
@@ -118,13 +168,82 @@ var addgroup = {
     var a = addgroup.userArray;
     var container = $("#listOfUsers");
     for (var i = 0; i < a.length; i++) {
-      var userDiv = $("<div>");
-      userDiv.html()
+      if (a[i].username === localStorage.user) continue;
+      var li = $("<li>");
+      li[0].id = a[i].username;
+      li.addClass("userEntry");
+      var nameDiv = $("<div>");
+      nameDiv.html(a[i].first + " " + a[i].last);
+      nameDiv.css("padding", "10px");
+      nameDiv.css("font-size", "27px");
+      li.append(nameDiv);
+      li.mousedown(function() {
+        $(this).css("background-color", "#99FFCC");
+      });
+      li.mouseup(function() {
+        if ($(this)[0].className.indexOf("true") !== -1) {
+          $(this).removeClass("true");
+          $(this).css("background-color", "#99FFFF");
+        }
+        else {
+          $(this).addClass("true");
+          $(this).css("background-color", "#99FFCC"); 
+        }
+      });
+      container.append(li);
     }
   },
 
-  createNewGroup: function() {    
-      window.location.href = 'map.html';
+  createNewGroup: function() {
+    var groupName = $("#groupName").val();
+    console.log("groupName", groupName);
+    if (groupName === "") {
+      alert("Please enter a group name!");
+      return; 
+    }
+    var users = [localStorage.user];
+    var allEntries = $(".true");
+    for (var i = 0; i < allEntries.length; i++) {
+      //console.log(allEntries[i].id);
+      users.push(allEntries[i].id);
+    }
+    if (users.length < 2) {
+      alert("Please select users");
+      return;
+    }
+    //console.log(users);
+    var data = {name: groupName, users: users};
+    addgroup.sendGroupToServer(data, function() {
+      console.log("successfully sent group to server");
+      $('#groups').css({'display': 'block'});
+      $('#addgroup').css({'display': 'none'});
+      groups.init();
+      $("#groupName").val("");
+      $("#listOfUsers").empty();
+    }, function() {
+      console.log("failed to send group to server");
+    })
+
+    //window.location.href = 'map.html';
+  },
+
+  back: function() {
+    console.log("CLICKED BK");
+    // $('#groups').css({'display': 'block'});
+    // $('#addgroup').css({'display': 'none'});
+    // groups.init();
+    // $("#groupName").val("");
+    // $("#listOfUsers").empty();
+  },
+
+  sendGroupToServer: function(data, onSuccess, onError) {
+    $.ajax({
+      type: "post",
+      data: data,
+      url: "/addgroup",
+      success: onSuccess,
+      error: onError
+      });
   }
 
 }
@@ -412,7 +531,7 @@ var gmap = {
 
 function checkLocation() {
   var pathname = window.location.pathname;
-  var pages = ["map", "groups", "addgroup", "event"];
+  var pages = ["map", "groups", "addgroup", "event", "index"];
   var currentState = undefined;
   for (i = 0; i < pages.length; i++) {
     if (pathname.indexOf(pages[i]) !== -1) {
@@ -423,9 +542,10 @@ function checkLocation() {
 }
 
 function manageState(state) {
-  if (state !== undefined) {
+  if (state === "index") {
+    //window.location.href = "index.html";
+    login.init();
   }
-  if (state === undefined) login.init();
   if (state === "map") gmap.init();
   if (state === "groups") groups.init();
   if (state === "addgroup") addgroup.init();
@@ -452,7 +572,7 @@ function itIsReady () {
     var userIndex = window.location.href.indexOf("#");
     userString = undefined;
     if (userIndex !== -1) userString = decodeURI(window.location.href.slice(userIndex+1));
-    console.log("userString", userString);
+    //console.log("userString", userString);
     var currentState = checkLocation();
     manageState(currentState);
 }
