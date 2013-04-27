@@ -33,7 +33,7 @@ io.sockets.on('connection', function(socket) {
                 if (err) throw err;
             });
             var groups = user.groups.slice(0);
-            addSocketToGroups(groups, data.user, socket.id, function() {
+            addSocketToGroups(groups, data.user, socket.id, socket, function() {
                 console.log("added socket to groups");
             }, function(err) {
                 console.log("failed to add socket to groups coz:", err);
@@ -44,20 +44,38 @@ io.sockets.on('connection', function(socket) {
     });
 
     console.log("socket", socket.id);
-    socket.send(socket.id);
+    //socket.send(socket.id);
     socket.on("msg", function(data) {
+        //store this chat message in the group collection
+        storeMsgInGroup(data);
         socket.emit('status', {success: 'true'});
-        socket.broadcast.emit('newmsg', data);
+        console.log("Emitting!");
+        socket.broadcast.to(data.grpID).emit('newmsg', data);
         //console.log("data.date", typeof(data.date));
         //console.log("new date", typeof(new Date()));
     });
 
     socket.on('disconnect', function() {
+
         console.log('socket disconnected');
     });
 });
 
-function addSocketToGroups(groups, user, socketid, onSuccess, onError) {
+
+function storeMsgInGroup(data) {
+    Groups.findOne({_id: data.grpID}, function(err, group) {
+        if (err) throw err;
+
+        //note: data = {body: input, date: date.toString(), grpID: chat.group._id, user: localStorage.user};
+        group.chat.push(data);
+        group.save(function(err) {
+            if (err) throw err;
+            console.log("stored message in the server");
+        });
+    });
+}
+
+function addSocketToGroups(groups, user, socketid, socket, onSuccess, onError) {
     if (groups.length === 0) {
         onSuccess();
         return;
@@ -76,14 +94,56 @@ function addSocketToGroups(groups, user, socketid, onSuccess, onError) {
                 grp.clients.socket = socketid;
             }
         }
+        //allow user to join all his/her groups (socket Room)
+        var socketAlreadyThere = false;
+        for (var j = 0; j < io.sockets.clients(group).length; j++) {
+            console.log("ID of clients in group " + group + " =", io.sockets.clients(group)[j].id);
+            if (io.sockets.clients(group)[j].id === socketid) {
+                socketAlreadyThere = true;
+            }
+        }
+        if (!socketAlreadyThere) {
+            socket.join(group);
+            console.log("socket " + socketid + " of username " + user + " is joining group " + group);
+        }
+            
+        
+
         grp.save(function(err) {
             if (err) throw err;
-            addSocketToGroups(groups, user, socketid, onSuccess, onError);
+            addSocketToGroups(groups, user, socketid, socket, onSuccess, onError);
         });
     })
 }
 
+function removeSocketFromGroups(groups, user, socketid, socket, onSuccess, onError) {
+    if (groups.length === 0) {
+        onSuccess();
+        return;
+    }
+    var group = groups.shift();
+    Groups.findOne({_id: group}, function(err, grp) {
+        if (err) {
+            onError(err);
+            return;
+        }
+        //if (grp.clients === undefined) grp.clients = {};
+        //if (grp.clients[user] === undefined) grp.clients[user] = {};
+        //grp.clients.push({user: user, socket: socketid});
+        for (var i = 0; i < grp.clients; i++) {
+            if (grp.clients.user === user) {
+                grp.clients.socket = socketid;
+            }
+        }
+        //allow user to join all his/her groups (socket Room)
+        socket.join(group);
 
+        grp.save(function(err) {
+            if (err) throw err;
+            addSocketToGroups(groups, user, socketid, socket, onSuccess, onError);
+        });
+    })
+}
 
 
 
@@ -122,7 +182,7 @@ function init(){
     });
 
     User.find({}, function(err, user){
-                console.log("user in init:", user);
+                //console.log("user in init:", user);
             });
     
     //console.log("Groups", Groups);
@@ -135,7 +195,7 @@ function createGroup(name, users, onSuccess, onError) {
     //defaultGroup.clients = {};
     console.log("defaultGroup1", defaultGroup.clients);
     for (var i = 0; i < users.length; i++) {
-        defaultGroup.clients.push({user: users[i], socket: undefined});
+        defaultGroup.clients.push({user: users[i], socket: "nothing"});
     }
     console.log("defaultGroup2", defaultGroup.clients);
     defaultGroup.save(function(err) {

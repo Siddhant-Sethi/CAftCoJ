@@ -264,6 +264,7 @@ var chat = {
       chat.group = data.group;
       chat.initSocket();
       chat.initStuff();
+      chat.loadPastMessages();
     }, function(err) {
       console.log("could not get group for chat from server because:", JSON.stringify(err));
     });
@@ -295,8 +296,26 @@ var chat = {
     $("#chatform").submit(chat.sendMessageClick);
     chat.status();
     chat.newmsg();
-    //console.log(input)
   },
+
+  loadPastMessages: function() {
+    var num = 0;
+    if (chat.group.chat.length > 30) num = chat.group.chat.length - 30;
+    for (var i = num; i < chat.group.chat.length; i++) {
+      var input = chat.group.chat[i].body;
+      var currentTime = new Date(chat.group.chat[i].date);
+      var msgAlign;
+      var user1;
+      if (chat.group.chat[i].user === localStorage.user) msgAlign = "right";
+      else {
+        msgAlign = "left";
+        user1 = chat.group.chat[i].user;
+      }
+      chat.repeat(input, currentTime, msgAlign, user1);
+    }
+
+  },
+
 
   getGroup: function(id, onSuccess, onError) {
     $.ajax({
@@ -316,6 +335,7 @@ var chat = {
     $('#chat').css({'display': 'none'});
     $('#groups').css({'display': 'block'});
     groups.init();
+    $("#messages").empty();
   },
 
   map: function() {
@@ -328,7 +348,7 @@ var chat = {
     if (input === "") return; 
     $("#input").val("");
     var date = new Date();
-    var data = {body: input, date: date.toString()};
+    var data = {body: input, date: date.toString(), grpID: chat.group._id, user: localStorage.user};
     chat.socket.emit('msg', data);
     //console.log("data.date", data.date);
     //console.log("new date", new Date());
@@ -336,7 +356,9 @@ var chat = {
     return false;
   },
 
-  repeat: function(input, currentTime, msgAlign)  {
+  //input = message text; currentTime = data object, msgAlign = right 
+  //or left, user1 = other username from server
+  repeat: function(input, currentTime, msgAlign, user1)  {
     var stamp = "AM";
     if (currentTime.getHours() >= 12) stamp = "PM";
     var hour = 12;
@@ -350,16 +372,21 @@ var chat = {
       var innerDiv = $("<div>");
       innerDiv.addClass("entry");
       var timeDiv = $("<div>");
+      if (msgAlign === "right") time = localStorage.user + " - " + time;
+      else time = user1 + " - " + time;
       timeDiv.html(time);
       timeDiv.css("text-align", "center");
       timeDiv.css("padding", "2px");
       timeDiv.css("font-size", "11px");
       timeDiv.css("color", "gray");
+      var user = $("<div>");
+      user.addClass('chatMsgUser');
       var innerP = $("<p>");
       innerP.css("padding", "10px");
       innerP.css("text-align", msgAlign);
       innerP.html(input);
       innerDiv.append(timeDiv);
+      innerDiv.append(user);
       innerDiv.append(innerP);
       if (msgAlign === "right")
         innerDiv.css("background-color", "rgba(175,238,238,.2)");
@@ -387,8 +414,9 @@ var chat = {
 
   newmsg: function() {
     chat.socket.on("newmsg", function(data) {
+      if (data.grpID !== chat.group._id) return;
       var currentTime = new Date(data.date);
-      chat.repeat(data.body, currentTime, "left");
+      chat.repeat(data.body, currentTime, "left", data.user);
     });
   }
 }
