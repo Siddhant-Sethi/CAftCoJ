@@ -299,6 +299,7 @@ var chat = {
   },
 
   loadPastMessages: function() {
+    $("#messages").empty();
     var num = 0;
     if (chat.group.chat.length > 30) num = chat.group.chat.length - 30;
     for (var i = num; i < chat.group.chat.length; i++) {
@@ -339,6 +340,7 @@ var chat = {
   },
 
   map: function() {
+    localStorage.grpID = chat.group._id;
     window.location.href = "map.html";
   },
 
@@ -424,18 +426,21 @@ var chat = {
 
 var gmap = {
   init: function() {
-    gmap.events = [];
-    gmap.markerIndex = -1;
-    gmap.loadScript();
-    $("#logoutButton").click(function() {
-      logoutPerson();
+    if (localStorage.grpID === undefined) alert("WTF");
+    chat.getGroup(localStorage.grpID, function(data) {
+      console.log("got group from server!");
+      gmap.group = data.group;
+      gmap.serverEvents = data.group.events;
+      gmap.events = [];
+      gmap.markerIndex = -1;
+      gmap.loadScript();
+      $("#logoutButton").click(function() {
+        logoutPerson();
+      });
+    }, function(err) {
+      console.log("could not get group for chat from server because:", JSON.stringify(err));
     });
-    gmap.getGroupEvents(function(data) {
-      gmap.serverEvents = data.events;
-      console.log("got events from server:", gmap.serverEvents);
-    }, function() {
-      console.log("could not get events from server");
-    });
+    
   },
 
   createNewPerson: function(latitude, longitude) {
@@ -481,11 +486,7 @@ var gmap = {
       gmap.placeMarker(event.latLng);
     });
     console.log("comes here");
-    gmap.updateLocation(latitude, longitude, function(){
-      console.log("failed to update your location in the server");
-    }, function() {
-      console.log("successfully updated your location in the server");
-    });
+    
 
     gmap.createOtherPeople(gmap.userArray);
     gmap.createGroupEvents(gmap.serverEvents);
@@ -592,16 +593,6 @@ var gmap = {
 
   },
 
-  // getMarkerPosition: function() {
-  //   var indexjb = window.location.href.indexOf('"jb"');
-  //   var indexkb = window.location.href.indexOf('"kb"');
-  //   var indexEnd = window.location.href.indexOf('}');
-  //   var lat = JSON.parse(window.location.href.slice(indexjb+5, indexkb-1));
-  //   var lon = JSON.parse(window.location.href.slice(indexkb+5, indexEnd));
-  //   gmap.eventMarkerLocation = new google.maps.LatLng(lat, lon);
-  //   console.log(lat, lon);
-  // },
-
   addEventToServer: function(data, onSuccess, onError) {
     $.ajax({
     type: "post",
@@ -702,6 +693,16 @@ var gmap = {
   }
 }
 
+function updateYourLocation() {
+  navigator.geolocation.getCurrentPosition(function(position) {
+    gmap.updateLocation(position.coords.latitude, position.coords.longitude, function(){
+      console.log("failed to update your location in the server");
+    }, function() {
+      console.log("successfully updated your location in the server");
+    });
+  });
+}
+
 
 function checkLocation() {
   var pathname = window.location.pathname;
@@ -731,6 +732,7 @@ function manageState(state) {
 
 $(document).ready(function() {
     itIsReady();
+    updateYourLocation();
     //chat.initSocket();
    });
 
