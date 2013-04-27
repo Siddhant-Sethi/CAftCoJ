@@ -15,6 +15,8 @@ var login = {
                  function success(data){
                     //alert(JSON.stringify(data));
                     localStorage.user = user.val();
+                    chat.initSocket();
+                    //chat.addSocketToGroups();
                     //login.user = user.val();
                     $('#login').css({'display': 'none'});
                     $('#groups').css({'display': 'block'});
@@ -59,6 +61,7 @@ var login = {
                     localStorage.user = user.val();
                     $('#login').css({'display': 'none'});
                     $('#groups').css({'display': 'block'});
+                    chat.initSocket();
                     //window.location.href = 'groups.html#' + encodeURI(user.val());
                 },
                 function error(xhr, status, err){
@@ -139,6 +142,7 @@ var groups = {
     $('#groups').css({'display': 'none'});
     $('#addgroup').css({'display': 'block'});
     addgroup.init();
+    $("#listOfGroups").empty();
   },
 
   getGroups: function(onSuccess, onError) {
@@ -224,6 +228,7 @@ var addgroup = {
       groups.init();
       $("#groupName").val("");
       $("#listOfUsers").empty();
+      chat.initUserSocket();
     }, function() {
       console.log("failed to send group to server");
     })
@@ -269,9 +274,18 @@ var chat = {
     $("#chatBarTitle").html(chat.group.name);
   },
 
+  initUserSocket: function() {
+    console.log("CUrrentUser:", localStorage.user);
+    if (localStorage.user === undefined) return;
+    var data = {user: localStorage.user};
+    chat.socket.emit("init", data);
+  },
+
   initSocket: function() {
     console.log("this is the chat group:", chat.group);
     chat.socket = io.connect("http://localhost:8888");
+    console.log("this is the socket session id:", chat.socket.socket);
+    chat.initUserSocket();
     $('#input').keydown(function() {
           if (event.keyCode == 13) {
               chat.sendMessageClick();
@@ -294,6 +308,10 @@ var chat = {
       });
   },
 
+  addSocketToGroups: function(user, socketID) {
+
+  },
+
   back: function() {
     $('#chat').css({'display': 'none'});
     $('#groups').css({'display': 'block'});
@@ -306,16 +324,16 @@ var chat = {
 
   sendMessageClick: function() {
   // send the msg event, with some data
-      var input = $("#input").val();
-      if (input === "") return; 
-      $("#input").val("");
-      var date = new Date();
-      var data = {body: input, date: date.toString()};
-      chat.socket.emit('msg', data);
-      //console.log("data.date", data.date);
+    var input = $("#input").val();
+    if (input === "") return; 
+    $("#input").val("");
+    var date = new Date();
+    var data = {body: input, date: date.toString()};
+    chat.socket.emit('msg', data);
+    //console.log("data.date", data.date);
     //console.log("new date", new Date());
-      chat.writeMessage(input, date);
-      return false;
+    chat.writeMessage(input, date);
+    return false;
   },
 
   repeat: function(input, currentTime, msgAlign)  {
@@ -674,7 +692,10 @@ function manageState(state) {
     //window.location.href = "index.html";
     login.init();
   }
-  if (state === "map") gmap.init();
+  if (state === "map") {
+    gmap.init();
+    chat.initSocket();
+  }
   if (state === "groups") groups.init();
   if (state === "addgroup") addgroup.init();
   if (state === "event") gmap.getMarkerPosition();
@@ -682,6 +703,7 @@ function manageState(state) {
 
 $(document).ready(function() {
     itIsReady();
+    //chat.initSocket();
    });
 
 

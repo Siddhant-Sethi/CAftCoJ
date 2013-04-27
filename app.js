@@ -5,27 +5,6 @@ var express = require("express");
 // var app = express();
 // app.listen(8889);
 
-
-
-
-// ========================
-// === Socket.io server ===
-// ========================
-
-var io = require('socket.io').listen(8888);
-io.sockets.on('connection', function(socket) {
-    socket.on("msg", function(data) {
-        socket.emit('status', {success: 'true'});
-        socket.broadcast.emit('newmsg', data);
-        //console.log("data.date", typeof(data.date));
-        //console.log("new date", typeof(new Date()));
-    });
-});
-
-// ========================
-// === Mongoose server ===
-// ========================
-
 var path = require('path');
 var express = require('express');
 var http = require('http');
@@ -34,7 +13,86 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var Groups = require('./Groups');
 
+
+
 init();
+
+
+// ========================
+// === Socket.io server ===
+// ========================
+
+var io = require('socket.io').listen(8888);
+io.sockets.on('connection', function(socket) {
+    //initialize user's socket id into every group and the user's schema
+    socket.on("init", function(data) {
+        User.findOne({username: data.user}, function(err, user) {
+            if (err) throw err;
+            user.socketid = socket.id;
+            user.save(function(err) {
+                if (err) throw err;
+            });
+            var groups = user.groups.slice(0);
+            addSocketToGroups(groups, data.user, socket.id, function() {
+                console.log("added socket to groups");
+            }, function(err) {
+                console.log("failed to add socket to groups coz:", err);
+            });
+            
+        });
+
+    });
+
+    console.log("socket", socket.id);
+    socket.send(socket.id);
+    socket.on("msg", function(data) {
+        socket.emit('status', {success: 'true'});
+        socket.broadcast.emit('newmsg', data);
+        //console.log("data.date", typeof(data.date));
+        //console.log("new date", typeof(new Date()));
+    });
+
+    socket.on('disconnect', function() {
+        console.log('socket disconnected');
+    });
+});
+
+function addSocketToGroups(groups, user, socketid, onSuccess, onError) {
+    if (groups.length === 0) {
+        onSuccess();
+        return;
+    }
+    var group = groups.shift();
+    Groups.findOne({_id: group}, function(err, grp) {
+        if (err) {
+            onError(err);
+            return;
+        }
+        //if (grp.clients === undefined) grp.clients = {};
+        //if (grp.clients[user] === undefined) grp.clients[user] = {};
+        //grp.clients.push({user: user, socket: socketid});
+        for (var i = 0; i < grp.clients; i++) {
+            if (grp.clients.user === user) {
+                grp.clients.socket = socketid;
+            }
+        }
+        grp.save(function(err) {
+            if (err) throw err;
+            addSocketToGroups(groups, user, socketid, onSuccess, onError);
+        });
+    })
+}
+
+
+
+
+
+// ========================
+// === Mongoose server ===
+// ========================
+
+
+
 
 function init(){
     app = express();
@@ -61,7 +119,11 @@ function init(){
             console.log("could not add default group to server");
         });
         }
-    })
+    });
+
+    User.find({}, function(err, user){
+                console.log("user in init:", user);
+            });
     
     //console.log("Groups", Groups);
 }
@@ -70,25 +132,25 @@ function createGroup(name, users, onSuccess, onError) {
     
     var defaultGroup = new Groups({name: name, users: users});
     defaultGroup.registeredTimestamp = new Date();
+    //defaultGroup.clients = {};
+    console.log("defaultGroup1", defaultGroup.clients);
+    for (var i = 0; i < users.length; i++) {
+        defaultGroup.clients.push({user: users[i], socket: undefined});
+    }
+    console.log("defaultGroup2", defaultGroup.clients);
     defaultGroup.save(function(err) {
         console.log("ID!!!!! ONE", defaultGroup._id);
         console.log("defaultGroup", defaultGroup);
         if (err) onError();
         else onSuccess(defaultGroup._id);
+
+        Groups.find({}, function(err, doc) {
+            if (err) throw err;
+            console.log("this is her :",doc);
+
+        });
         
     });
-    //Groups.insert(defaultGroup);
-    
-    Groups.find({}, function(err, doc) {
-        if (err)
-            throw err;
-        console.log("this is her :",doc);
-    });
-    
-
-    // User.find().each(function(err, doc){
-    //     console.log("users:", doc);
-    // });
 }
 
 
@@ -277,11 +339,14 @@ app.post("/newEvent", function(request, response) {
 app.post("/addgroup", function(request, response) {
     createGroup(request.body.name, request.body.users, function(id) {
         console.log("ID!!!!! TWO", id);
-        var a = request.body.users;
+        var a = request.body.users.slice(0);
         addGroupID(a, id, function() {
             response.send({'error': true});
         }, function() {
             response.send({'success': true});
+            User.find({}, function(err, user){
+                console.log("user after adding grp ID:", user);
+            });
         });
     }, function() {
         response.send({'error': true});
@@ -301,15 +366,18 @@ function addGroupID(users, id, onError, done) {
             onError();
             return;
         }
+        console.log("u.groups", u.groups);
         u.groups.push(id);
+        console.log("u.groups after", u.groups);
         u.save(function(error) {
             if (err) {
                 console.log("could not save");
                 onError();
                 return;
             }
-        })
-        addGroupID(users, id, onError, done);
+            addGroupID(users, id, onError, done);
+        });
+        
     });
 
 }
@@ -368,6 +436,10 @@ function getGroupObjects(objArr, grpIDs, onSuccess, onError) {
     var thisID = grpIDs.shift();
     Groups.findOne({_id: thisID}, function(err, group) {
         if (err) {
+            onError();
+            return;
+        }
+        if (!group) {
             onError();
             return;
         }

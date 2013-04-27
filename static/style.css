@@ -186,6 +186,11 @@ h1	{
 	height: 100%;
 }
 
+.groupEntry {
+	display: block;
+}
+
+
 /*Chat Page*/
 
 #chatWidget {

@@ -13,7 +13,8 @@ var User = new Schema({
     	lon: Number
     },
     groups: Array,
-    current: Boolean
+    current: Boolean,
+    socketid: String,
     //lastIp: String,
     //lastHost: String,
     //lastUserAgent: String,
