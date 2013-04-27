@@ -369,7 +369,7 @@ app.get("/getUser", function(request, response) {
 
 app.post("/newEvent", function(request, response) {
     //console.log("group name", request.body.group);
-    Groups.findOne({name: request.body.group}, function(err, group) {
+    Groups.findOne({_id: request.body.group}, function(err, group) {
         if (err) response.send('error');
         if (group) {
             group.events.push({name: request.body.name,

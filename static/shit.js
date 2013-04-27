@@ -2,6 +2,14 @@
 var login = {
   init: function() {
     $('#login').css({'display': 'block'});
+    $("#signupButton").click(function() {
+      $("#SignUp").css({'display': 'block'});
+      $("#Login").css({'display': 'none'});
+    });
+    $("#BackToLogIn").click(function()  {
+      $("#SignUp").css({'display': 'none'});
+      $("#Login").css({'display': 'block'});
+    });
   },
 
   login: function() {
@@ -284,7 +292,7 @@ var chat = {
 
   initSocket: function() {
     console.log("this is the chat group:", chat.group);
-    chat.socket = io.connect("http://localhost:8888");
+    chat.socket = io.connect("http://128.237.184.252:8888");
     console.log("this is the socket session id:", chat.socket.socket);
     chat.initUserSocket();
     $('#input').keydown(function() {
@@ -579,7 +587,7 @@ var gmap = {
     //gmap.revertEventAdder();
 
     var newEvent = {name: $("#name").val(), start: $("#start").val(), end: $('#end').val(), date: $("#chooseDate").val(),
-                    group: 'default', lat: pos.jb, lon: pos.kb, created: date}
+                    group: gmap.group._id, lat: pos.jb, lon: pos.kb, created: date}
 
     gmap.addEventToServer(newEvent, function(){
       console.log("Event added to group");
@@ -589,8 +597,7 @@ var gmap = {
     });
     $('#event').css({'display': 'none'});
     $('#map-canvas').css({'display': 'block'});
-    window.location.href = 'map.html';
-
+    //window.location.href = 'map.html';
   },
 
   addEventToServer: function(data, onSuccess, onError) {
