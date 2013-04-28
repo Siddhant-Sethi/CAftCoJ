@@ -17,55 +17,53 @@ module.exports = function (app) {
     app.post('/register', function(req, res) {
         var username = req.body.username;
         //console.log("User", User);
-        res.send({'err': "error"});
-        // User.findOne({username : username }, function(err, existingUser) {
-        //     if (err){
-        //         throw err;
-        //         return;
-        //     }
+        User.findOne({username : username }, function(err, existingUser) {
+            if (err){
+                throw err;
+                return;
+            }
             
-        //     if (existingUser) {
-        //         console.log("existingUser true", existingUser);
-        //         return res.send({'err': "error", 'existingUser': existingUser});
-        //     }
+            if (existingUser) {
+                return res.send({'error': true, 'msg': "Username Exists!"});
+            }
 
-        //     var user = new User({ username : req.body.username });
-        //     user.registeredTimestamp = new Date();
-        //     user.first = req.body.first;
-        //     user.last = req.body.last;
-        //     user.setPassword(req.body.password, function(err) {
-        //         if (err) {
-        //             return res.send({'err': err});
-        //         }
+            var user = new User({ username : req.body.username });
+            user.registeredTimestamp = new Date();
+            user.first = req.body.first;
+            user.last = req.body.last;
+            user.setPassword(req.body.password, function(err) {
+                if (err) {
+                    throw err;
+                }
 
-        //         user.save(function(err) {
-        //             if (err) {
-        //                 return res.send({'err': err});
-        //             }
-        //             return res.send('success');
-        //         });
-        //     });  
-        // });
-        // //console.log("Groups", Groups);
-        // Groups.findOne({name: "default"}, function(err, defaultGroup) {
-        //     if (err)
-        //         throw error;
-        //     if (defaultGroup)
-        //         console.log("It found the default group, and is adding the new user to it");
-        //         console.log("Before:", defaultGroup.users);
-        //         defaultGroup["users"].push(username);
-        //         console.log("After:", defaultGroup.users);
-        //         defaultGroup.save(function(err) {
-        //             if (err) throw err;
-        //             console.log("no error");
-        //         })
-        //         Groups.find({name: "default"}, function(err, defaultG) {
-        //             if (err)
-        //                 throw error;
-        //             if (defaultG)
-        //                 console.log("Second Find:", defaultG);
-        //         });
-        // });
+                user.save(function(err) {
+                    if (err) {
+                        throw err;
+                    }
+                    return res.send('success');
+                });
+            });  
+        });
+        //console.log("Groups", Groups);
+        Groups.findOne({name: "default"}, function(err, defaultGroup) {
+            if (err)
+                throw error;
+            if (defaultGroup)
+                console.log("It found the default group, and is adding the new user to it");
+                console.log("Before:", defaultGroup.users);
+                defaultGroup["users"].push(username);
+                console.log("After:", defaultGroup.users);
+                defaultGroup.save(function(err) {
+                    if (err) throw err;
+                    console.log("no error");
+                })
+                Groups.find({name: "default"}, function(err, defaultG) {
+                    if (err)
+                        throw error;
+                    if (defaultG)
+                        console.log("Second Find:", defaultG);
+                });
+        });
 
         
 

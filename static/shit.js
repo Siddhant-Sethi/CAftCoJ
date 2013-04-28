@@ -1,6 +1,7 @@
 
 var login = {
   init: function() {
+    localStorage.user = undefined;
     $('#login').css({'display': 'block'});
     $("#signupButton").click(function() {
       $("#SignUp").css({'display': 'block'});
@@ -66,7 +67,10 @@ var login = {
       login.addUser(newUser, 
                 function success(data){
                     //alert(JSON.stringify(data));
-                    console.log("successfully signed up", data);
+                    if (data.error) {
+                      alert(data.msg);
+                      return;
+                    }
                     localStorage.user = user.val();
                     $('#login').css({'display': 'none'});
                     $('#groups').css({'display': 'block'});
