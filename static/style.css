@@ -67,7 +67,7 @@ li {
 }
 
 /*Used for the Top Bar*/
-#bar ul {
+.bar ul {
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
@@ -80,12 +80,40 @@ li {
 	/*box-shadow: 0px 0px 8px 0px #000000;*/
 }
 
-#bar {
+.bar {
 	display: block;
 	z-index: 1;
 	position: fixed;
 	width: 100%;
 	background-color: #23BF00;
+	text-align: center;
+}
+
+.bottomBar {
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	text-align: center;
+	background-color: #23BF00;
+}
+
+#addGroupButton {
+	display: inline-block;
+	font-size: 15px;
+	padding: 5px;
+	background-color: black;
+	color: white;
+	border-radius: 5px;
+}
+
+#plusSign {
+	background-image: url('plus.png');
+	background-size: 38px 38px;
+	display: inline-block;
+	float: right;
+	width: 38px;
+	height: 38px;
+
 }
 
 #logo {
@@ -126,7 +154,7 @@ h1	{
 #Login	{
 	/*display: inline;*/
 	position: absolute;
-	top: 30%;
+	top: 20%;
 	width: 100%;
 	height: 40%;
 	/*padding-bottom: 20px;*/
@@ -204,6 +232,16 @@ h1	{
 
 #event {
 	display: none;
+}
+
+#eventLog {
+	display: none;
+}
+
+#map {
+	display: block;
+	height: 100%;
+
 }
 
 #chat {
@@ -314,6 +352,20 @@ h1	{
     float: right;
 }
 
+.tab {
+	display: inline-block;
+	padding-left: 20px;
+	padding-right: 20px;
+	width: 45%;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	border-style: solid;
+	border-color: black;
+	border: 2px;
+}
 
+#logo {
+	margin: 0;
+}
 
 

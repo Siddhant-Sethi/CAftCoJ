@@ -103,6 +103,8 @@ function logoutPerson() {
 
 var groups = {
   init: function() {
+    //groups.plusImage = 'plus.png';
+    //$("#addGroupButton").click(groups.newGroup());
     groups.getGroups(function(groupsArray) {
       console.log("Got groups Array!:", groupsArray);
       groups.displayGroups(groupsArray.success);
@@ -292,7 +294,7 @@ var chat = {
 
   initSocket: function() {
     console.log("this is the chat group:", chat.group);
-    chat.socket = io.connect("http://128.237.184.252:8888");
+    chat.socket = io.connect("http://128.237.207.74:8888");
     console.log("this is the socket session id:", chat.socket.socket);
     chat.initUserSocket();
     $('#input').keydown(function() {
@@ -445,6 +447,10 @@ var gmap = {
       $("#logoutButton").click(function() {
         logoutPerson();
       });
+      $("#logTab").click(function() {
+        $('#eventLog').css({'display': 'block'});
+        $('#map').css({'display': 'none'});
+      })
     }, function(err) {
       console.log("could not get group for chat from server because:", JSON.stringify(err));
     });
@@ -558,7 +564,7 @@ var gmap = {
       //gmap.popupEventAdder(marker);
       gmap.markerIndex = gmap.markerIndex + 1;
       $('#event').css({'display': 'block'});
-      $('#map-canvas').css({'display': 'none'});
+      $('#map').css({'display': 'none'});
       //window.location.href = 'event.html#' + encodeURI(userString) + "$" + JSON.stringify(marker.getPosition());
   },
 
@@ -596,7 +602,7 @@ var gmap = {
       console.log("Error: event not added");
     });
     $('#event').css({'display': 'none'});
-    $('#map-canvas').css({'display': 'block'});
+    $('#map').css({'display': 'block'});
     //window.location.href = 'map.html';
   },
 
@@ -697,6 +703,37 @@ var gmap = {
       //console.log(script);
       
 
+  }
+}
+
+var log = {
+  init: function() {
+    log.group = gmap.group;
+    log.displayEvents();
+  },
+
+  displayEvents: function() {
+    var container = $("#listOfEvents");
+    for (var i = 0; i < log.group.events; i++) {
+      var li = $("<li>");
+      li.addClass("eventEntry");
+      var nameDiv = $("<div>");
+      nameDiv.html(grps[i].name);
+      nameDiv.css("padding", "10px");
+      nameDiv.css("font-size", "27px");
+      li.append(nameDiv);
+      li.mousedown(function() {
+        $(this).css("background-color", "#99FFCC");
+      });
+      li.mouseup(function() {
+        $(this).css("background-color", "#FFFFFF");
+        $('#groups').css({'display': 'none'});
+        $('#chat').css({'display': 'block'});
+        chat.init($(this)[0].id);
+        container.empty();
+      });
+      container.append(li);
+    }
   }
 }
 

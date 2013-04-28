@@ -12,24 +12,14 @@
     </style>
   </head>
   <body>
-    <div id="map-canvas"></div>
-<!--     <div id="eventAdder">
-      <form id="form" action="javascript:gmap.addEvent()">
-          <div class="pop_up">
-            <h1>Add an Event :</h1>
-            <label>
-               <span>Event Name :</span>
-               <input type="text" class="text_input" name="name" id="name"/>
-            </label>
-             <label>
-               <span>Time :</span>
-               <input type="text" class="text_input" name="time" id="time"/>
-               <input type="submit" value="Submit Form" />
-            </label>     
-         </div>       
-    </form>
-    <button id="logoutButton" type="button" >Logout</button>
-    </div> -->
+    <div id="map">
+      <div class="bar">
+        <div id="mapTab" class="tab">Map</div>
+        <div id="logTab" class="tab">Log</div>
+      </div>
+      <div id="map-canvas"></div>
+    </div>
+    
 
 
     <div id="event">
@@ -161,6 +151,17 @@
                 </label>     
              </div>       
           </form>
+      </div>
+    </div>
+    </div>
+
+    <div id="eventLog">
+      <div class="page">
+      <div class="bar">
+          <h1 id="logo">Event Log</h1>
+      </div>
+      <div class = "content">
+          <ul id="listOfEvents"></ul>
       </div>
     </div>
     </div>
