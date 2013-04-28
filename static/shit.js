@@ -66,14 +66,19 @@ var login = {
       login.addUser(newUser, 
                 function success(data){
                     //alert(JSON.stringify(data));
+                    console.log("successfully signed up", data);
                     localStorage.user = user.val();
                     $('#login').css({'display': 'none'});
                     $('#groups').css({'display': 'block'});
                     chat.initSocket();
                     //window.location.href = 'groups.html#' + encodeURI(user.val());
                 },
-                function error(xhr, status, err){
-                    alert(JSON.stringify(err));
+                function error(data){
+                  console.log("data err", data);
+                  if (data.existingUser) {
+                    alert("Username Exists!");
+                  }
+                  alert(JSON.stringify(data.err));
                 });
     }
     
@@ -85,7 +90,7 @@ var login = {
     data: data,
     url: "/register",
     success: onSuccess,
-    error: onError
+    err: onError
     });
   }
 }

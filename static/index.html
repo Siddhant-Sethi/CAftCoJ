@@ -68,7 +68,7 @@
 		<div id="groups">
 			<div class="page">
 				<div class="bar">
-						<h1 id="logo">Groups</h1>
+					<h1 id="logo">Groups</h1>
 				</div>
 				<div class = "content">
 			      
@@ -81,12 +81,11 @@
 				<div class="bottomBar">
 					<button id="addGroupButton" onclick="groups.newGroup()">Add Group</button>
 
-					<div id="plusSign"></div>
+					<!-- <div id="plusSign"></div> -->
 				
 			</div>
 		</div>
 		</div>
-
 
 		<div id="addgroup">
 			<div class="page">
@@ -114,20 +113,17 @@
 		</div>
 
 		<div id="chat">
-			<div id="chatWidget" class="center">
-				<div id="chatBar">
-					<div id="backToGroups" class="chatBarButton" onclick="chat.back()">Grps</div>
-					<div id="chatBarTitle"></div>
-					<div id="goToMap" class="chatBarButton" onclick="chat.map()">Map</div>
-				</div>
-			<div id="messagesContainer" class="center">
-				
-				<ul id="messages">
-
-				</ul>
+			<div class="page">
+			<div class="bar" id="chatBar">
+				<div id="backToGroups" class="chatBarButton" onclick="chat.back()">Grps</div>
+				<div id="chatBarTitle"></div>
+				<div id="goToMap" class="chatBarButton" onclick="chat.map()">Map</div>
+			</div>
+			<div id="messagesContainer">
+				<ul id="messages"></ul>
 			</div>
 			<div id="enterContainer">
-				<div id="enterMessage" class="center">
+				<div id="enterMessage">
 					<form id="chatform">
 					<textarea id="input" name="Text" type="text" rows="3" placeholder="Enter Message"></textarea>
 					<input id="sendButton" name="Submit"  type="submit" value="Send"/>
@@ -139,7 +135,7 @@
 
 
 		<script src="jquery-1.9.0.js"></script>
-		<script src="http://128.237.207.74:8888/socket.io/socket.io.js"></script>
+		<script src="http://128.237.206.97:8888/socket.io/socket.io.js"></script>
 		<script src="shit.js"></script>
 	</body>
 </html>
