@@ -115,6 +115,7 @@ var groups = {
 
   displayGroups: function(grps) {
     var container = $("#listOfGroups");
+    container.empty();
     for (var i = 0; i < grps.length; i++) {
       console.log(container);
       var li = $("<li>");
@@ -185,6 +186,7 @@ var addgroup = {
   displayUsers: function() {
     var a = addgroup.userArray;
     var container = $("#listOfUsers");
+    container.empty();
     for (var i = 0; i < a.length; i++) {
       if (a[i].username === localStorage.user) continue;
       var li = $("<li>");
@@ -269,6 +271,7 @@ var addgroup = {
 
 var chat = {
   init: function(grpID) {
+    chat.configureDisplays();
     chat.getGroup(grpID, function(data) {
       console.log("got group from server!");
       chat.group = data.group;
@@ -279,6 +282,13 @@ var chat = {
       console.log("could not get group for chat from server because:", JSON.stringify(err));
     });
     
+  },
+
+  configureDisplays: function() {
+    $('#chat').css({'display': 'block'});
+    $('#groups').css({'display': 'none'});
+    $('#login').css({'display': 'none'});
+    $('#addgroup').css({'display': 'none'});
   },
 
   initStuff: function() {
@@ -447,10 +457,24 @@ var gmap = {
       $("#logoutButton").click(function() {
         logoutPerson();
       });
+      $("#backToChat").click(function() {
+        window.location.href = "index.html#chat";
+      });
+      $("#mapTab").css('background-color', "#23BF7F");
       $("#logTab").click(function() {
+        $(this).css('background-color', "#23BF7F");
+        $("#mapTab").css('background-color', "#23BF00");
         $('#eventLog').css({'display': 'block'});
-        $('#map').css({'display': 'none'});
-      })
+        $('#map-canvas').css({'display': 'none'});
+        log.init();
+      });
+      $("#mapTab").click(function() {
+        $(this).css('background-color', "#23BF7F");
+        $("#logTab").css('background-color', "#23BF00");
+        $('#eventLog').css({'display': 'none'});
+        $('#map-canvas').css({'display': 'block'});
+        //gmap.init();
+      });
     }, function(err) {
       console.log("could not get group for chat from server because:", JSON.stringify(err));
     });
@@ -708,29 +732,48 @@ var gmap = {
 
 var log = {
   init: function() {
-    log.group = gmap.group;
-    log.displayEvents();
+    chat.getGroup(gmap.group._id, function(data) {
+      console.log("got group from server!");
+      log.group = data.group;
+      log.displayEvents();
+    }, function(err) {
+      console.log("could not get group for chat from server because:", JSON.stringify(err));
+    });
+    
   },
 
   displayEvents: function() {
+    console.log("in display events. events:", log.group.events);
     var container = $("#listOfEvents");
-    for (var i = 0; i < log.group.events; i++) {
+    container.empty();
+    for (var i = 0; i < log.group.events.length; i++) {
       var li = $("<li>");
       li.addClass("eventEntry");
       var nameDiv = $("<div>");
-      nameDiv.html(grps[i].name);
+      nameDiv.html("Name: " + log.group.events[i].name);
       nameDiv.css("padding", "10px");
       nameDiv.css("font-size", "27px");
       li.append(nameDiv);
+      var dateDiv = $("<div>");
+      dateDiv.html("Date: " + log.group.events[i].data);
+      dateDiv.css("padding", "10px");
+      dateDiv.css("font-size", "20px");
+      li.append(dateDiv);
+      var timeDiv = $("<div>");
+      timeDiv.html("Start: " + log.group.events[i].start + ", End: " + log.group.events[i].end);
+      timeDiv.css("padding", "10px");
+      timeDiv.css("font-size", "20px");
+      li.append(timeDiv);
+      var createdDiv = $("<div>");
+      createdDiv.html("Created: " + log.group.events[i].created);
+      createdDiv.css("padding", "10px");
+      createdDiv.css("font-size", "27px");
+      li.append(createdDiv);
       li.mousedown(function() {
         $(this).css("background-color", "#99FFCC");
       });
       li.mouseup(function() {
         $(this).css("background-color", "#FFFFFF");
-        $('#groups').css({'display': 'none'});
-        $('#chat').css({'display': 'block'});
-        chat.init($(this)[0].id);
-        container.empty();
       });
       container.append(li);
     }
@@ -750,7 +793,7 @@ function updateYourLocation() {
 
 function checkLocation() {
   var pathname = window.location.pathname;
-  var pages = ["map", "groups", "addgroup", "event", "index"];
+  var pages = ["index", "map"];
   var currentState = undefined;
   for (i = 0; i < pages.length; i++) {
     if (pathname.indexOf(pages[i]) !== -1) {
@@ -793,10 +836,13 @@ $(document).ready(function() {
 
 
 function itIsReady () {
-    var userIndex = window.location.href.indexOf("#");
-    userString = undefined;
-    if (userIndex !== -1) userString = decodeURI(window.location.href.slice(userIndex+1));
-    //console.log("userString", userString);
+    var index = window.location.href.indexOf("#");
+    pathfinder = undefined
+    if (index !== -1) pathfinder = decodeURI(window.location.href.slice(index+1));
+    if (pathfinder !== undefined) {
+      chat.init(localStorage.grpID);
+      return;
+    }
     var currentState = checkLocation();
     manageState(currentState);
 }

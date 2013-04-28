@@ -368,4 +368,8 @@ h1	{
 	margin: 0;
 }
 
+.eventEntry {
+	text-align: left;
+	padding: 10px;
+}
 
