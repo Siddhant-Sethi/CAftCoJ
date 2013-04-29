@@ -42,18 +42,19 @@ io.sockets.on('connection', function(socket) {
         });
 
     });
-
-    console.log("socket", socket.id);
-    //socket.send(socket.id);
+    //listen for chat messages from the client
     socket.on("msg", function(data) {
         //store this chat message in the group collection
         storeMsgInGroup(data);
         socket.emit('status', {success: 'true'});
         console.log("Emitting!");
         socket.broadcast.to(data.grpID).emit('newmsg', data);
+        socket.broadcast.to(data.grpID).emit('chatNotif', data);
         //console.log("data.date", typeof(data.date));
         //console.log("new date", typeof(new Date()));
     });
+
+    socket.on("");
 
     socket.on('disconnect', function() {
 
@@ -293,7 +294,7 @@ app.get("/logout", function(request, response){
 
 // get item
 app.get("/getAllUsers", function(request, response){
-    console.log("GROUP ID BICHEZ", typeof(request.query.grpID));
+    //console.log("GROUP ID BICHEZ", typeof(request.query.grpID));
     userArray1 = [];
     successful = true;
     Groups.findOne({_id: request.query.grpID}, function(err, group) {

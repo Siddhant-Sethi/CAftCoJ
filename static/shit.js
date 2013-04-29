@@ -307,7 +307,7 @@ var chat = {
   },
 
   initUserSocket: function() {
-    console.log("CUrrentUser:", localStorage.user);
+    console.log("CurrentUser:", localStorage.user);
     if (localStorage.user === undefined) return;
     var data = {user: localStorage.user};
     chat.socket.emit("init", data);
@@ -316,7 +316,8 @@ var chat = {
   initSocket: function() {
     console.log("this is the chat group:", chat.group);
     chat.socket = io.connect("http://128.237.202.134:8888");
-    console.log("this is the socket session id:", chat.socket.socket);
+    //console.log("this is the socket session id:", chat.socket.socket);
+    chat.listen();
     chat.initUserSocket();
     $('#input').keydown(function() {
           if (event.keyCode == 13) {
@@ -327,6 +328,15 @@ var chat = {
     $("#chatform").submit(chat.sendMessageClick);
     chat.status();
     chat.newmsg();
+  },
+
+  listen: function() {
+    chat.socket.on("chatNotif", function(data) {
+      console.log("new Chat message", data);
+    });
+    chat.socket.on("eventNotif", function(data) {
+      console.log("new Event", data);
+    });
   },
 
   loadPastMessages: function() {
@@ -515,7 +525,6 @@ var gmap = {
         $('#eventLog').css({'display': 'none'});
         $('#map-canvas').css({'display': 'block'});
         $('#membersPage').css({'display': 'none'});
-        //gmap.init();
       });
       $("#membersTab").click(function() {
         $(this).css('background-color', "#23BF7F");
