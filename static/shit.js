@@ -5,11 +5,11 @@ var login = {
     $('#login').css({'display': 'block'});
     $("#signupButton").click(function() {
       $("#SignUp").css({'display': 'block'});
-      $("#Login").css({'display': 'none'});
+      $("#LoginForm").css({'display': 'none'});
     });
     $("#BackToLogIn").click(function()  {
       $("#SignUp").css({'display': 'none'});
-      $("#Login").css({'display': 'block'});
+      $("#LoginForm").css({'display': 'block'});
     });
   },
 
