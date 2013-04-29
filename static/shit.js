@@ -1,4 +1,3 @@
-
 var login = {
   init: function() {
     localStorage.user = undefined;
@@ -943,6 +942,45 @@ var log = {
       container.append(li);
     }
   }
+}
+
+var settings = {
+  init: function() {
+    $('#groups').css({'display': 'none'});
+    $('#Settings').css({'display': 'block'});
+    var firstName = $('#set_firstName');
+    var lastName = $('#set_lastName');
+    var username = $('#set_usernameField');
+    settings.getCurrentUser(localStorage.user, function(data){
+      console.log("first", data.firstName);
+      console.log("last", data.lastName);
+      console.log("username", data.username);            
+      settings.firstName = data.firstName;
+      settings.lastName = data.lastName;
+      settings.username = data.username;
+      firstName.html("First Name: " + settings.firstName);
+      lastName.html("Last Name: " + settings.lastName);
+      username.html("Username: " + settings.username);
+      //gmap.createOtherPeople(data.userArray);
+    },
+    function() {
+      console.log("Error: Did not get user");
+    });
+  },
+  returnToGroups: function() {
+    $('#groups').css({'display': 'block'});
+    $('#Settings').css({'display': 'none'});
+  },
+
+getCurrentUser: function(user, onSuccess, onError) {
+  $.ajax({
+    type: "get",
+    data: {username: user},
+    url: "/getUser",
+    success: onSuccess,
+    error: onError
+    });
+}
 }
 
 function updateYourLocation() {
