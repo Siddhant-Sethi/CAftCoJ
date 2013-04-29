@@ -15,21 +15,23 @@ var login = {
 
   login: function() {
     var user = $("#user-input");
+    var u = user.val().replace(/\s+/g,"");
     var password = $("#password-input");
     var newlogin = {
-                    username: user.val(),
+                    username: u,
                     password: password.val()
                     };
     login.loginServer(newlogin, 
                  function success(data){
                     //alert(JSON.stringify(data));
-                    localStorage.user = user.val();
+                    localStorage.user = u;
                     chat.initSocket();
                     //chat.addSocketToGroups();
                     //login.user = user.val();
                     $('#login').css({'display': 'none'});
                     $('#groups').css({'display': 'block'});
                     groups.init();
+                    updateYourLocation();
                     //window.location.href = 'groups.html#' + encodeURI(user.val());
                 },
                 function error(xhr, status, err){
@@ -48,9 +50,9 @@ var login = {
   },
 
   signup: function() {
-    //signup.userTaken = false;
     login.passDiff = false;
     var user = $("#username");
+    var u = user.val().replace(/\s+/g,"");
     var firstName = $("#first");
     var lastName = $("#last");
     var password1 = $("#password1");
@@ -61,7 +63,7 @@ var login = {
       var newUser = {
                     first: firstName.val(),
                     last: lastName.val(),
-                    username: user.val(),
+                    username: u,
                     password: password1.val()
                     };
       login.addUser(newUser, 
@@ -71,10 +73,11 @@ var login = {
                       alert(data.msg);
                       return;
                     }
-                    localStorage.user = user.val();
+                    localStorage.user = u;
                     $('#login').css({'display': 'none'});
                     $('#groups').css({'display': 'block'});
                     chat.initSocket();
+                    updateYourLocation();
                     //window.location.href = 'groups.html#' + encodeURI(user.val());
                 },
                 function error(data){
@@ -179,8 +182,7 @@ var groups = {
 
 var addgroup = {
   init: function() {
-    
-    gmap.getAllUsers(function(data){
+    gmap.getAllUsers(defaultID, function(data){
       addgroup.userArray = data.userArray;
       console.log("data.userArray ",data.userArray);
       addgroup.displayUsers();
@@ -313,7 +315,7 @@ var chat = {
 
   initSocket: function() {
     console.log("this is the chat group:", chat.group);
-    chat.socket = io.connect("http://128.237.207.74:8888");
+    chat.socket = io.connect("http://128.237.202.134:8888");
     console.log("this is the socket session id:", chat.socket.socket);
     chat.initUserSocket();
     $('#input').keydown(function() {
@@ -329,9 +331,9 @@ var chat = {
 
   loadPastMessages: function() {
     $("#messages").empty();
-    var num = 0;
-    if (chat.group.chat.length > 30) num = chat.group.chat.length - 30;
-    for (var i = num; i < chat.group.chat.length; i++) {
+    chat.num = 0;
+    if (chat.group.chat.length > 30) chat.num = chat.group.chat.length - 30;
+    for (var i = chat.num; i < chat.group.chat.length; i++) {
       var input = chat.group.chat[i].body;
       var currentTime = new Date(chat.group.chat[i].date);
       var msgAlign;
@@ -341,11 +343,28 @@ var chat = {
         msgAlign = "left";
         user1 = chat.group.chat[i].user;
       }
-      chat.repeat(input, currentTime, msgAlign, user1);
+      chat.repeat(input, currentTime, msgAlign, "append", user1);
     }
 
   },
 
+  loadMoreMessages: function() {
+    var oldNum = chat.num;
+    chat.num = Math.max(chat.num - 30, 0);
+    console.log(chat.num);
+    for (var i = oldNum-1; i >= chat.num; i--) {
+      var input = chat.group.chat[i].body;
+      var currentTime = new Date(chat.group.chat[i].date);
+      var msgAlign;
+      var user1;
+      if (chat.group.chat[i].user === localStorage.user) msgAlign = "right";
+      else {
+        msgAlign = "left";
+        user1 = chat.group.chat[i].user;
+      }
+      chat.repeat(input, currentTime, msgAlign, "prepend", user1);
+    }
+  },
 
   getGroup: function(id, onSuccess, onError) {
     $.ajax({
@@ -389,7 +408,7 @@ var chat = {
 
   //input = message text; currentTime = data object, msgAlign = right 
   //or left, user1 = other username from server
-  repeat: function(input, currentTime, msgAlign, user1)  {
+  repeat: function(input, currentTime, msgAlign, pend, user1)  {
     var stamp = "AM";
     if (currentTime.getHours() >= 12) stamp = "PM";
     var hour = 12;
@@ -410,21 +429,19 @@ var chat = {
       timeDiv.css("padding", "2px");
       timeDiv.css("font-size", "11px");
       timeDiv.css("color", "gray");
-      var user = $("<div>");
-      user.addClass('chatMsgUser');
       var innerP = $("<p>");
       innerP.css("padding", "10px");
       innerP.css("text-align", msgAlign);
       innerP.html(input);
       innerDiv.append(timeDiv);
-      innerDiv.append(user);
       innerDiv.append(innerP);
       if (msgAlign === "right")
         innerDiv.css("background-color", "rgba(175,238,238,.2)");
       li.append(innerDiv);
-      $("#messages").append(li);
+      if (pend === "append") $("#messages").append(li);
+      if (pend === "prepend") $("#messages").prepend(li);
       var bigDiv = $("#messagesContainer");
-      bigDiv[0].scrollTop = bigDiv[0].scrollHeight;
+      if (pend === "append") bigDiv[0].scrollTop = bigDiv[0].scrollHeight;
   },
 
   status: function() {
@@ -439,7 +456,7 @@ var chat = {
 
   writeMessage: function(input, date) {
     var currentTime = date;
-    chat.repeat(input, currentTime, "right");
+    chat.repeat(input, currentTime, "right", "append");
   },
 
 
@@ -447,7 +464,7 @@ var chat = {
     chat.socket.on("newmsg", function(data) {
       if (data.grpID !== chat.group._id) return;
       var currentTime = new Date(data.date);
-      chat.repeat(data.body, currentTime, "left", data.user);
+      chat.repeat(data.body, currentTime, "left", "append", data.user);
     });
   }
 }
@@ -463,38 +480,60 @@ var gmap = {
       gmap.events = [];
       gmap.markerIndex = -1;
       gmap.loadScript();
-      $("#logoutButton").click(function() {
+      gmap.initButtons();
+    }, function(err) {
+      console.log("could not get group for chat from server because:", err);
+    });
+  },
+
+  initButtons: function() {
+    $("#logoutButton").click(function() {
         logoutPerson();
       });
       $("#backToChat").click(function() {
         window.location.href = "index.html#chat";
       });
       $("#mapTab").css('background-color', "#23BF7F");
+      $("#logTab").css('background-color', "#23BF00");
+      $("#membersTab").css('background-color', "#23BF00");
+      $('#eventLog').css({'display': 'none'});
+      $('#map-canvas').css({'display': 'block'});
+      $('#membersPage').css({'display': 'none'});
       $("#logTab").click(function() {
         $(this).css('background-color', "#23BF7F");
         $("#mapTab").css('background-color', "#23BF00");
+        $("#membersTab").css('background-color', "#23BF00");
         $('#eventLog').css({'display': 'block'});
         $('#map-canvas').css({'display': 'none'});
+        $('#membersPage').css({'display': 'none'});
         log.init();
       });
       $("#mapTab").click(function() {
         $(this).css('background-color', "#23BF7F");
         $("#logTab").css('background-color', "#23BF00");
+        $("#membersTab").css('background-color', "#23BF00");
         $('#eventLog').css({'display': 'none'});
         $('#map-canvas').css({'display': 'block'});
+        $('#membersPage').css({'display': 'none'});
         //gmap.init();
       });
-    }, function(err) {
-      console.log("could not get group for chat from server because:", JSON.stringify(err));
-    });
-    
+      $("#membersTab").click(function() {
+        $(this).css('background-color', "#23BF7F");
+        $("#logTab").css('background-color', "#23BF00");
+        $("#mapTab").css('background-color', "#23BF00");
+        $('#eventLog').css({'display': 'none'});
+        $('#map-canvas').css({'display': 'none'});
+        $('#membersPage').css({'display': 'block'});
+        mem.init();
+      });
   },
 
   createNewPerson: function(latitude, longitude) {
     var mapOptions = {
       center: new google.maps.LatLng(latitude, longitude),
       zoom: 8,
-      mapTypeId: google.maps.MapTypeId.ROADMAP
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      draggable: true
     };
     var infowindow = new google.maps.InfoWindow({
       //content: firstName + " " + lastName
@@ -512,21 +551,11 @@ var gmap = {
 
     console.log(marker);
 
-    
-
-    // google.maps.event.addListener(gmap.map, 'center_changed', function() {
-    //   // 3 seconds after the center of the map has changed, pan back to the
-    //   // marker.
-    //   window.setTimeout(function() {
-    //     gmap.map.panTo(marker.getPosition());
-    //   }, 3000);
-    // });
-
     google.maps.event.addListener(marker, 'click', function() {
       infowindow.open(gmap.map, this);
-      console.log("shit");
-      gmap.map.setZoom(8);
-      gmap.map.panTo(marker.getPosition());
+      //console.log("shit");
+      //gmap.map.setZoom(8);
+      //gmap.map.panTo(marker.getPosition());
     });
 
     google.maps.event.addListener(gmap.map, 'dblclick', function(event) {
@@ -558,7 +587,7 @@ var gmap = {
       google.maps.event.addListener(marker, 'click', function() {
         infowindow.open(gmap.map, this);
         //gmap.map.setZoom(8);
-        gmap.map.panTo(marker.getPosition());
+        //gmap.map.panTo(marker.getPosition());
       });
     }
   },
@@ -621,7 +650,7 @@ var gmap = {
     //infowindow.open(gmap.map, this);
     google.maps.event.addListener(gmap.events[gmap.markerIndex], 'click', function() {
       infowindow.open(gmap.map, this);
-      gmap.map.panTo(marker.getPosition());
+      //gmap.map.panTo(marker.getPosition());
     });
     //gmap.revertEventAdder();
 
@@ -649,9 +678,10 @@ var gmap = {
     });
   },
 
-  getAllUsers: function(onSuccess, onError) {
+  getAllUsers: function(grpID, onSuccess, onError) {
     $.ajax({
     type: "get",
+    data: {grpID: grpID},
     url: "/getAllUsers",
     success: onSuccess,
     error: onError
@@ -673,7 +703,7 @@ var gmap = {
   },
 
   loadPeople: function() {
-    gmap.getAllUsers(function(data){
+    gmap.getAllUsers(gmap.group._id, function(data){
       gmap.userArray = data.userArray;
       console.log("data.userArray ",data.userArray);
       //gmap.createOtherPeople(data.userArray);
@@ -688,7 +718,7 @@ var gmap = {
 
   createOtherPeople: function(userArray) {
     console.log(userArray);
-    for (var i = 0; i <userArray.length; i++) {
+    for (var i = 0; i < userArray.length; i++) {
       console.log(userArray[i].username, localStorage.user);
       if (userArray[i].username === localStorage.user) continue;
       var firstName = userArray[i].first;
@@ -711,20 +741,11 @@ var gmap = {
         map: gmap.map,
       });
       console.log("marker", marker);
-      // google.maps.event.addListener(gmap.map, 'center_changed', function() {
-      //   // 3 seconds after the center of the map has changed, pan back to the
-      //   // marker.
-      //   window.setTimeout(function() {
-      //     gmap.map.panTo(marker.getPosition());
-      //   }, 3000);
-      // });
+      
 
       google.maps.event.addListener(marker, 'click', function() {
         infowindow.open(gmap.map, this);
-        console.log("shit");
-        gmap.map.setZoom(8);
       });
-      //gmap.placeMarker(marker.getPosition());
     }
   },
 
@@ -737,6 +758,132 @@ var gmap = {
       
 
   }
+}
+
+var mem = {
+  init: function() {
+    mem.group = gmap.group;
+    mem.userArray = gmap.userArray;
+    mem.initState();
+
+  },
+
+  initState: function() {
+    gmap.getAllUsers(mem.group._id, function(data){
+      mem.userArray = data.userArray;
+      mem.displayMembers(mem.userArray);
+      $("#membersTitle").html(gmap.group.name);
+      $("#addMembersButton1").css("display", "none");
+      $("#addMembersButton").css("display", "block");
+      $("#listOfMembers").css("display", "block");
+      $("#listOfAllUsers").css("display", "none");
+    },
+    function() {
+      console.log("Error: Did not get users from group");
+    });
+  },
+
+  displayUsersToAdd: function() {
+    $("#listOfMembers").css("display", "none");
+    var container = $("#listOfAllUsers");
+    container.empty();
+    var a = mem.allUsers;
+    for (var i = 0; i < a.length; i++) {
+      if (a[i].username === localStorage.user) continue;
+      var userInAlready = false;
+      for (var j = 0; j < mem.userArray.length; j++) {
+        if (a[i].username === mem.userArray[j].username) userInAlready = true;
+      }
+      if (userInAlready) continue;
+      var li = $("<li>");
+      li[0].id = a[i].username;
+      li.addClass("userEntry");
+      var nameDiv = $("<div>");
+      nameDiv.html(a[i].first + " " + a[i].last);
+      nameDiv.css("padding", "10px");
+      nameDiv.css("font-size", "20px");
+      li.append(nameDiv);
+      li.mousedown(function() {
+        $(this).css("background-color", "#99FFCC");
+      });
+      li.mouseup(function() {
+        if ($(this)[0].className.indexOf("true") !== -1) {
+          $(this).removeClass("true");
+          $(this).css("background-color", "#99FFFF");
+        }
+        else {
+          $(this).addClass("true");
+          $(this).css("background-color", "#99FFCC"); 
+        }
+      });
+      container.append(li);
+    }
+  },
+
+  addMembers: function() {
+    console.log("clicked add members");
+    gmap.getAllUsers(defaultID, function(data){
+      mem.allUsers = data.userArray;
+      mem.displayUsersToAdd();
+      $("#listOfAllUsers").css("display", "block");
+      $("#addMembersButton1").css("display", "block");
+      $("#addMembersButton").css("display", "none");
+    },
+    function() {
+      console.log("Error: Did not get users from default group");
+    });
+  },
+
+  displayMembers: function(users) {
+    var container = $("#listOfMembers");
+    container.empty();
+    for (var i = 0; i < users.length; i++) {
+      var li = $("<li>");
+      li.addClass("userEntry");
+      var nameDiv = $("<div>");
+      nameDiv.html(users[i].first + " " + users[i].last);
+      nameDiv.css("padding", "10px");
+      nameDiv.css("font-size", "20px");
+      li.append(nameDiv);
+      li.mousedown(function() {
+        $(this).css("background-color", "#99FFCC");
+      });
+      li.mouseup(function() {
+        $(this).css("background-color", "#FFFFFF");
+      });
+      container.append(li);
+    }
+  },
+
+  addNewMembers: function() {
+    var users = [];
+    var allEntries = $(".true");
+    for (var i = 0; i < allEntries.length; i++) {
+      users.push(allEntries[i].id);
+    }
+    if (users.length < 1) {
+      alert("Please select users!");
+      return;
+    }
+    var data = {id: mem.group._id, users: users};
+    mem.addNewMembersToServer(data, function() {
+      console.log("added new members to group!");
+      mem.initState();
+    }, function() {
+      console.log("failed to add new members to group");
+    });
+  },
+
+  addNewMembersToServer: function(data, onSuccess, onError) {
+    $.ajax({
+    type: "put",
+    data: data,
+    url: "/addNewMembers",
+    success: onSuccess,
+    error: onError
+    });
+  }
+
 }
 
 var log = {
@@ -827,21 +974,25 @@ function manageState(state) {
 }
 
 $(document).ready(function() {
-    itIsReady();
-    updateYourLocation();
-    //chat.initSocket();
+    getDefaultID(function(data) {
+      defaultID = data.id;
+      console.log("defaultID = ", defaultID);
+      itIsReady();
+    }, function() {
+      console.log("Failed to get default group id");
+    });
    });
 
 
 
-// function checkCurrentUser(onSuccess, onError) {
-//   $.ajax({
-//     type: "get",
-//     url: "/getUser",
-//     success: onSuccess,
-//     error: onError
-//     });
-// }
+function getDefaultID(onSuccess, onError) {
+  $.ajax({
+    type: "get",
+    url: "/getDefaultID",
+    success: onSuccess,
+    error: onError
+    });
+}
 
 
 function itIsReady () {

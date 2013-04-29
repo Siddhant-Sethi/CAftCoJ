@@ -36,7 +36,8 @@ body {
 }
 
 .userEntry {
-	background-color: #99FFFF;
+	text-align: left;
+	background-color: #FFFFFF;
 	border-style: solid;
 	border-bottom: 1px;
 	border-bottom-color: green;
@@ -140,7 +141,7 @@ li {
 	margin: auto auto;
 }
 
-[type="submit"],[name="Submit2"]	{
+[type="submit"],[name="Submit2"],.button	{
 	font-size: 18px;
 	margin: 20px 0;
 	padding: 5px;
@@ -332,7 +333,7 @@ li {
 	display: inline-block;
 	padding-left: 20px;
 	padding-right: 20px;
-	width: 45%;
+	width: 25%;
 	padding-top: 5px;
 	padding-bottom: 5px;
 	border-style: solid;

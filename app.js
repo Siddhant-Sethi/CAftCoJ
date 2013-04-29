@@ -193,11 +193,11 @@ function createGroup(name, users, onSuccess, onError) {
     var defaultGroup = new Groups({name: name, users: users});
     defaultGroup.registeredTimestamp = new Date();
     //defaultGroup.clients = {};
-    console.log("defaultGroup1", defaultGroup.clients);
+    //console.log("defaultGroup1", defaultGroup.clients);
     for (var i = 0; i < users.length; i++) {
         defaultGroup.clients.push({user: users[i], socket: "nothing"});
     }
-    console.log("defaultGroup2", defaultGroup.clients);
+    //console.log("defaultGroup2", defaultGroup.clients);
     defaultGroup.save(function(err) {
         console.log("ID!!!!! ONE", defaultGroup._id);
         console.log("defaultGroup", defaultGroup);
@@ -293,17 +293,18 @@ app.get("/logout", function(request, response){
 
 // get item
 app.get("/getAllUsers", function(request, response){
+    console.log("GROUP ID BICHEZ", typeof(request.query.grpID));
     userArray1 = [];
     successful = true;
-    Groups.find({name: "default"}, function(err, group) {
+    Groups.findOne({_id: request.query.grpID}, function(err, group) {
         if (err) {
             console.log("GROUP ERROR");
             //response.send({'error': err});
             successful = false;
         }
         if (group) {
-            //console.log("group[0].users", group[0].users);
-            var userArray = getUserArray(group[0].users, userArray1, response);
+            console.log("group.users", group.users);
+            var userArray = getUserArray(group.users, userArray1, response);
             //console.log("THISuserArray", userArray);
             
             }
@@ -478,6 +479,7 @@ app.post("/getGroups", function(request, response) {
             response.send({"error": "could not find user"});
             throw err;
         }
+        if (!user) throw err;
         var grpIDs = user.groups;
         var objArr = [];
         getGroupObjects(objArr, grpIDs, function(a) {
@@ -518,13 +520,44 @@ app.post("/getGroup", function(request, response) {
     });
 });
 
-// update one item
-app.put("/database/event", function(request, response){
-  //edit item
-  response.send({
-    success: true
-  });
+app.get("/getDefaultID", function(request, response) {
+    Groups.findOne({name: "default"}, function(err, group) {
+        if (err) throw err;
+        response.send({"success": true, id: group._id});
+    })
 });
+
+// update group members
+app.put("/addNewMembers", function(request, response){
+    Groups.findOne({_id: request.body.id}, function(err, group) {
+        if (err) throw err;
+        for (var i = 0; i < request.body.users.length; i++) {
+            group.users.push(request.body.users[i]);
+            group.clients.push({user: request.body.users[i], socket: "nothing"});
+        }
+        group.save(function(err) {
+            if (err) throw err;
+            var a = request.body.users.slice(0);
+            addGroupIDToUsers(request.body.id, a, response);
+        }); 
+    });
+});
+
+function addGroupIDToUsers(grpID, users, response) {
+    if (users.length === 0) {
+        response.send('success');
+        return;
+    }
+    var user = users.shift();
+    User.findOne({username: user}, function(err, user) {
+        if (err) throw err;
+        user.groups.push(grpID);
+        user.save(function(err) {
+            if (err) throw err;
+            addGroupIDToUsers(grpID, users, response);
+        });
+    });
+}
 
 
 // delete event

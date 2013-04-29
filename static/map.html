@@ -15,6 +15,7 @@
     <div id="map">
       <div class="bar">
         <div id="backToChat" class="chatBarButton">Chat</div>
+        <div id="membersTab" class="tab">Members</div>
         <div id="mapTab" class="tab">Map</div>
         <div id="logTab" class="tab">Log</div>
       </div>
@@ -24,6 +25,15 @@
           <div class = "content">
               <ul id="listOfEvents"></ul>
           </div>
+        </div>
+      </div>
+      <div id="membersPage">
+        <div class = "content">
+          <h1 id="membersTitle"></h1>
+          <ul id="listOfAllUsers"></ul>
+          <button id="addMembersButton1" class="button" onclick="mem.addNewMembers()">Add Members</button>
+          <button id="addMembersButton" class="button" onclick="mem.addMembers()">Add Members</button>
+          <ul id="listOfMembers"></ul>
         </div>
       </div>
     </div>
