@@ -314,9 +314,9 @@ var chat = {
 
   initSocket: function() {
     console.log("this is the chat group:", chat.group);
-    chat.socket = io.connect("http://128.237.202.134:8888");
+    chat.socket = io.connect("http://128.237.133.187:8888");
     //console.log("this is the socket session id:", chat.socket.socket);
-    chat.listen();
+    //chat.listen();
     chat.initUserSocket();
     $('#input').keydown(function() {
           if (event.keyCode == 13) {
@@ -409,7 +409,7 @@ var chat = {
     var date = new Date();
     var data = {body: input, date: date.toString(), grpID: chat.group._id, user: localStorage.user};
     chat.socket.emit('msg', data);
-    //console.log("data.date", data.date);
+    console.log("data.date", data.date);
     //console.log("new date", new Date());
     chat.writeMessage(input, date);
     return false;

@@ -45,11 +45,12 @@ io.sockets.on('connection', function(socket) {
     //listen for chat messages from the client
     socket.on("msg", function(data) {
         //store this chat message in the group collection
+        console.log("GOT CHAT MSG");
         storeMsgInGroup(data);
         socket.emit('status', {success: 'true'});
         console.log("Emitting!");
         socket.broadcast.to(data.grpID).emit('newmsg', data);
-        socket.broadcast.to(data.grpID).emit('chatNotif', data);
+        //socket.broadcast.to(data.grpID).emit('chatNotif', data);
         //console.log("data.date", typeof(data.date));
         //console.log("new date", typeof(new Date()));
     });
