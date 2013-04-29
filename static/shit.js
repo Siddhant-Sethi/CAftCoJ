@@ -135,8 +135,26 @@ var groups = {
       var nameDiv = $("<div>");
       nameDiv.html(grps[i].name);
       nameDiv.css("padding", "10px");
+      nameDiv.css("padding-bottom", "6px");
       nameDiv.css("font-size", "27px");
+      nameDiv.css("font-weight", "bold");
+      nameDiv.css("display", "block");
       li.append(nameDiv);
+      var msgDiv = $("<div>");
+      var msgDivhtml;
+      var len = grps[i].chat.length;
+      if (len > 0) {
+        //console.log("dfdfv", grps[i].chat[1].body);
+        msgDivhtml = grps[i].chat[len-1].user + ": " + grps[i].chat[len-1].body;
+      } else msgDivhtml = "Send a message!";
+      msgDiv.html(msgDivhtml);
+      msgDiv.css("padding", "5px");
+      msgDiv.css("padding-left", "10px");
+      msgDiv.css("padding-top", "0px");
+      msgDiv.css("font-size", "12px");
+      msgDiv.css("display", "inline-block");
+      msgDiv.css("font-style", "italic");
+      li.append(msgDiv);
       li.mousedown(function() {
         $(this).css("background-color", "#99FFCC");
       });
@@ -358,6 +376,7 @@ var chat = {
   },
 
   loadMoreMessages: function() {
+    if (chat.num <= 0) return;
     var oldNum = chat.num;
     chat.num = Math.max(chat.num - 30, 0);
     console.log(chat.num);
@@ -785,6 +804,7 @@ var mem = {
       $("#addMembersButton").css("display", "block");
       $("#listOfMembers").css("display", "block");
       $("#listOfAllUsers").css("display", "none");
+      $("#addMembersBack").css("display", "none");
     },
     function() {
       console.log("Error: Did not get users from group");
@@ -828,6 +848,14 @@ var mem = {
     }
   },
 
+  back: function() {
+    $("#listOfAllUsers").css("display", "none");
+    $("#addMembersButton1").css("display", "none");
+    $("#addMembersBack").css("display", "none");
+    $("#addMembersButton").css("display", "block");
+    $("#listOfMembers").css("display", "block");
+  },
+
   addMembers: function() {
     console.log("clicked add members");
     gmap.getAllUsers(defaultID, function(data){
@@ -835,6 +863,7 @@ var mem = {
       mem.displayUsersToAdd();
       $("#listOfAllUsers").css("display", "block");
       $("#addMembersButton1").css("display", "block");
+      $("#addMembersBack").css("display", "inline-block");
       $("#addMembersButton").css("display", "none");
     },
     function() {
