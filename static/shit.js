@@ -728,17 +728,17 @@ var gmap = {
       var lon = userArray[i].lastLocation.lon;
       var lastLogin = userArray[i].lastLoginTimestamp;
       console.log(lat, lon);
-
+      var image = 'blue.png';
       var infowindow = new google.maps.InfoWindow({
         content: firstName + " " + lastName + "\n<br>" + "Last Login: " + lastLogin
         //content: "<img src=kim-kardashian-huge-tits.jpeg width=304 height=228>"
       });
       var myLatLong = new google.maps.LatLng(lat, lon);
       console.log("latlong", myLatLong);
-      var image = 'shit.png';
       var marker = new google.maps.Marker({
         position: myLatLong,
         map: gmap.map,
+        icon: image
       });
       console.log("marker", marker);
       
