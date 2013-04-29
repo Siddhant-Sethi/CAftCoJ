@@ -353,13 +353,13 @@ app.get("/getEvents", function(request, response){
 
 
 app.get("/getUser", function(request, response) {
-    User.findOne({current: true}, function(err, user) {
+    User.findOne({username: request.query.username}, function(err, user) {
         if (err) {
             console.log("error 1");
             response.send({'err': err, 'success': false});
         } if (user) {
-            console.log("username", user.username);
-            response.send({'success': true, 'username': user.username});
+            response.send({'success': true, 'username': user.username, 'firstName': user.first,
+                            'lastName': user.last});
         } else {
             console.log("error 2");
             response.send({'err': "error", 'success': false});
