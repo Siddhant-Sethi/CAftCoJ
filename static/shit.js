@@ -591,33 +591,72 @@ var gmap = {
     console.log("comes here");
     
 
-    gmap.createOtherPeople(gmap.userArray);
-    gmap.createGroupEvents(gmap.serverEvents);
+    gmap.personLoop(gmap.userArray);
+    gmap.eventLooop(gmap.serverEvents);
 
 
   },
 
-  createGroupEvents: function(events) {
+  eventLoop: function(events) {
     for (var i = 0; i < events.length; i++) {
-      var myLatLong = new google.maps.LatLng(events[i].lat, events[i].lon);
+      gmap.createGroupEvent(events[i]);  
+    }
+  },
+
+createGroupEvent: function(singleEvent) {
+      var myLatLong = new google.maps.LatLng(singleEvent.lat, singleEvent.lon);
       var marker = new google.maps.Marker({
           position: myLatLong,
           map: gmap.map,
           content: "",
         });
-
+      console.log("before infowindow");
       var infowindow = new google.maps.InfoWindow({
-        content: "Event Name: " + events[i].name + "\n<br>Start Time: " + events[i].start 
-                      + "\n<br>End Time: " + events[i].end + "\n<br>Date: " + events[i].date + "\n<br>Created: " + events[i].created
+        content: "Event Name: " + singleEvent.name + "\n<br>Start Time: " + singleEvent.start 
+                      + "\n<br>End Time: " + singleEvent.end + "\n<br>Date: " + singleEvent.date
       });
+      console.log("after infowindow");
+      google.maps.event.addListener(marker, 'click', function() {
+        infowindow.open(gmap.map, this);
+      });
+  },
+
+  personLoop: function(people) {
+    for (var i = 0; i < people.length; i++) {
+      gmap.createOtherPerson(people[i]);  
+    }
+  },
+     
+  createOtherPerson: function(user) {
+      if (user.username === localStorage.user) return;
+      var firstName = user.first;
+      var lastName = user.last;
+      
+      var lat = user.lastLocation.lat;
+      var lon = user.lastLocation.lon;
+      var lastLogin = user.lastLoginTimestamp;
+      console.log(lat, lon);
+      var image = 'blue.png';
+      var infowindow = new google.maps.InfoWindow({
+        content: firstName + " " + lastName + "\n<br>" + "Last Login: " + lastLogin
+        //content: "<img src=kim-kardashian-huge-tits.jpeg width=304 height=228>"
+      });
+      var myLatLong = new google.maps.LatLng(lat, lon);
+      console.log("latlong", myLatLong);
+      var marker = new google.maps.Marker({
+        position: myLatLong,
+        map: gmap.map,
+        icon: image
+      });
+      console.log("marker", marker);
+      
 
       google.maps.event.addListener(marker, 'click', function() {
         infowindow.open(gmap.map, this);
-        //gmap.map.setZoom(8);
-        //gmap.map.panTo(marker.getPosition());
       });
-    }
+
   },
+
 
   getGroupEvents: function(onSuccess, onError) {
     $.ajax({
@@ -743,38 +782,7 @@ var gmap = {
       });
   },
 
-  createOtherPeople: function(userArray) {
-    console.log(userArray);
-    for (var i = 0; i < userArray.length; i++) {
-      console.log(userArray[i].username, localStorage.user);
-      if (userArray[i].username === localStorage.user) continue;
-      var firstName = userArray[i].first;
-      var lastName = userArray[i].last;
-      
-      var lat = userArray[i].lastLocation.lat;
-      var lon = userArray[i].lastLocation.lon;
-      var lastLogin = userArray[i].lastLoginTimestamp;
-      console.log(lat, lon);
-      var image = 'blue.png';
-      var infowindow = new google.maps.InfoWindow({
-        content: firstName + " " + lastName + "\n<br>" + "Last Login: " + lastLogin
-        //content: "<img src=kim-kardashian-huge-tits.jpeg width=304 height=228>"
-      });
-      var myLatLong = new google.maps.LatLng(lat, lon);
-      console.log("latlong", myLatLong);
-      var marker = new google.maps.Marker({
-        position: myLatLong,
-        map: gmap.map,
-        icon: image
-      });
-      console.log("marker", marker);
-      
-
-      google.maps.event.addListener(marker, 'click', function() {
-        infowindow.open(gmap.map, this);
-      });
-    }
-  },
+ 
 
   loadScript: function() {
       var script = document.createElement("script");
