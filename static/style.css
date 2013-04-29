@@ -371,3 +371,15 @@ li {
 	color: red;
 }
 
+#Settings {
+	display: none;
+}
+
+#settingsPage {
+	padding: 10px, 10px;
+	font-size: 20px;
+}
+.info {
+	padding: 10px;
+}
+
