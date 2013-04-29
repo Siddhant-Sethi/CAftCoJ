@@ -54,8 +54,6 @@ io.sockets.on('connection', function(socket) {
         //console.log("new date", typeof(new Date()));
     });
 
-    socket.on("");
-
     socket.on('disconnect', function() {
 
         console.log('socket disconnected');
