@@ -105,6 +105,8 @@
 
 			<div class="bottomBar">
 					<button id="createGroupButton" onclick="addgroup.createNewGroup()">Go To Group</button>
+					<button id="addGroupButton" onclick="settings.init()">Settings</button>
+
 			</div>
 		</div>
 		</div>
@@ -130,6 +132,28 @@
 			</div>
 		</div>
 		</div>
+		
+		<div id="Settings">
+			<div class="page">
+			<div class="bar">
+					<h1 id="logo">Settings</h1>
+			</div>
+			<div class="content" id="settingsPage">
+				<div class="info" id ="set_firstName">
+				</div>
+				<div class="info" id ="set_lastName">
+				</div>
+				<div class="info" id ="set_usernameField">
+				</div>	
+			</div>
+			<div class="bottomBar">
+					<button id="addGroupButton" onclick="settings.returnToGroups()">Groups</button>
+					<button id="addGroupButton" onclick="logoutPerson()">Log Out</button>
+				
+			</div>
+		</div>
+		</div>
+
 
 
 		<script src="jquery-1.9.0.js"></script>
