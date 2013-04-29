@@ -314,7 +314,7 @@ var chat = {
 
   initSocket: function() {
     console.log("this is the chat group:", chat.group);
-    chat.socket = io.connect("http://128.237.133.187:8888");
+    chat.socket = io.connect("http://128.237.187.205:8888");
     //console.log("this is the socket session id:", chat.socket.socket);
     //chat.listen();
     chat.initUserSocket();
