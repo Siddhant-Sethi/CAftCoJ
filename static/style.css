@@ -9,6 +9,7 @@ body {
 /*	background-color: #0B6121;*/
 	height: 100%;
 	width: 100%;
+	/*overflow: none;*/
 }
 
 .page {
@@ -44,26 +45,79 @@ li {
 }
 
 /*Used for the Top Bar*/
-.bar ul {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-	position: fixed;
-	top: 0;
-	height: auto;
-	/*width: 1098px;*/
-	/*text-align: left;*/
-	/*padding-top: 15px;*/
-	/*box-shadow: 0px 0px 8px 0px #000000;*/
-}
-
 .bar {
 	display: block;
 	z-index: 1;
 	position: fixed;
+	top: 0;
 	width: 100%;
 	background-color: #23BF00;
 	text-align: center;
+}
+
+#logo {
+	font-size: 30px;
+	text-align: center;
+	margin: 0px;
+	padding: 2px 0px;
+	font-weight: bold;
+	text-shadow: 2px 2px white;
+}
+
+.content .Title	{
+	font-size: 40px;
+	margin: 7.5% 0px;
+	text-align: center;
+}
+
+.content 	{
+	position: fixed;
+	/*padding: 150px 0px 30px 0px;*/
+	top: 40px;
+	bottom: 40px;
+	width: 100%;
+	text-align: center;
+	margin: auto auto;
+	overflow-y: scroll;
+}
+
+#login .content	{
+	bottom: 0px;
+}
+
+[type="submit"],[name="Submit2"],.button	{
+	font-size: 20px;
+	margin: 20px 0;
+	padding: 5px;
+	border-radius: 5px;
+	/*background-color: #1e90ff;*/
+	background-color: #23BF00;
+	color: #f5f5f5;
+}
+
+#LoginForm	{
+	/*display: inline;*/
+	position: fixed;
+	top: 40px;
+	width: 100%;
+	/*height: 40%;*/
+	/*padding-bottom: 20px;*/
+	margin: auto auto;
+}
+
+.loginTextbox,.signupTextbox	{
+	width: 75%;
+	margin: 2.5px;
+	font-size: 20px;
+}
+
+#LoginButtons input, #SignupButtons	input {
+	margin: 5px;
+}
+
+#signupButton	{
+	background-color: black;
+	color: white;
 }
 
 .bottomBar {
@@ -90,66 +144,28 @@ li {
 	float: right;
 	width: 38px;
 	height: 38px;
-
 }
 
-#logo {
-	font-size: 40px;
-	text-align: center;
-	padding: 5px 0px;
-	font-weight: bold;
-	text-shadow: 2px 2px white;
-}
 
-.content .Title	{
-	font-size: 40px;
-	margin: 10px;
-	text-align: center;
-}
-
-.content 	{
-	position: absolute;
-	/*padding: 150px 0px 30px 0px;*/
-	top: 50px;
-	bottom: 0;
-	width: 100%;
-	text-align: center;
-	margin: auto auto;
-}
-
-[type="submit"],[name="Submit2"],.button	{
-	font-size: 18px;
-	margin: 20px 0;
-	padding: 5px;
-	border-radius: 5px;
-	/*background-color: #1e90ff;*/
-	background-color: #23BF00;
-	color: #f5f5f5;
-}
-
-#LoginForm	{
-	/*display: inline;*/
-	position: absolute;
-	top: 10%;
-	width: 100%;
-	/*height: 40%;*/
-	/*padding-bottom: 20px;*/
-	margin: auto auto;
-}
-
+/*Sign Up Page*/
 #SignUp {
 	display: none;
-	position: absolute;
-	top: 10%;
+	position: fixed;
+	top: 40px;
 	width: 100%;
 	/*height: 60%;*/
 	margin: auto auto;
 }
 
-/*Sign Up Page*/
 #signup_form {
 	font-size: 15px;
 	/*margin-left: 20px;*/
+}
+
+#BackToLogIn	{
+	background-color: red;
+	color: white;
+
 }
 
  /*Groups Page */
@@ -157,13 +173,15 @@ li {
 .groups_page	{
 	margin-left: 12.5%;
 	width: 75%;
-	height: 40%;
-	margin-top: 40px;
+	margin-top: 2.5%;
+	padding-bottom: 10px;
 }
 
 #listOfGroups	{
 	text-align: left;
 	font-size: 10px;
+	list-style-type: default;
+	border-left: 5px;
 }
 
 #listOfGroups li 	{
@@ -174,11 +192,6 @@ li {
 	margin: 3px 0;
 }
 
-#listOfGroups	{
-	list-style-type: default;
-	margin-left: 5px;
-
-}
 /*Add Group Page*/
 #createGroupForm 	{
 	margin-top: 40px;
@@ -241,16 +254,18 @@ li {
 
 
 /*Chat Page*/
-/*
-#chatWidget {
-    height: 100%;
-    position: relative;
-}*/
+#chat .content	{
+	bottom: 75px;
+}
 
-#enterContainer {
-    position: absolute;
-    bottom: 0px;
-    width: 100%;
+
+#chatFooter {
+	border-top: 1px solid black;
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	text-align: center;
+    background-color: none;
 }
 
 .chatEntry {
@@ -266,17 +281,11 @@ li {
     width: 100%;
 }
 
-#chatBar {
-	height: 30px;
-	background-color: #00CC66;
-	padding-top: 5px;
-	position: relative;
-}
 
 .chatBarButton {
-	background-color: #00CC66;
 	height: 30px;
 	display: inline;
+
 }
 
 #goToMap {
@@ -300,37 +309,25 @@ li {
 	font-weight: bold;
 }
 
-#messagesContainer {
-    height: 85%;
-    overflow-y: scroll;
+#input {
+	width: 88%;
+    max-height: 200px;
+}
+
+#enterMessage {
+    width: 90%;
+    margin: 10px;
+}
+
+#sendButton {
+    float: right;
+    margin: 0;
 }
 
 .entry {
     border-style: solid;
     border-bottom-width: 1px;  
     border-color: #909090;
-}
-
-.floatRight {
-    float: right;
-}
-
-.floatLeft {
-    float: left;
-}
-
-#input {
-    width: 88%;
-    max-height: 200px;
-}
-
-#enterMessage {
-    width: 90%;
-    margin: auto;
-}
-
-#sendButton {
-    float: right;
 }
 
 .tab {
@@ -345,10 +342,6 @@ li {
 	border: 2px;
 }
 
-#logo {
-	margin: 0;
-}
-
 .eventEntry {
 	text-align: left;
 	padding: 10px;
@@ -360,8 +353,16 @@ li {
 
 .true {
 	background-color: #99FFCC;
-
 }
+
+.floatRight {
+    float: right;
+}
+
+.floatLeft {
+    float: left;
+}
+
 
 #map-canvas {
 	height: 100%;
@@ -371,6 +372,7 @@ li {
 	color: red;
 }
 
+/*Settings Page*/
 #Settings {
 	display: none;
 }

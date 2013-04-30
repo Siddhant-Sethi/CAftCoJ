@@ -19,15 +19,15 @@
 						<h2 class="Title">Existing Users</h2>
 						<div id ="usernameField">
 							<!-- <label for="username">Username: </label> -->
-							<input id = "user-input" type ="text" name = "username"	required placeholder="Username">
+							<input class="loginTextbox" id="user-input" type ="text" name = "username"	required placeholder="Username">
 						</div>
 						<div id="passwordField">
-							<!-- <label for="password">Password: </label> -->
-							<input id = "password-input" type="password" name="password" required placeholder="password"/>
-						</div> <div id="loginFail"></div>
-						<div>
-							<input id="submitButton" name="Submit"  type="submit" value="Login"/>
+							<input class="loginTextbox" id = "password-input" type="password" name="password" required placeholder="password"/>
+						</div>
+						<div id="loginFail"></div>
+						<div id="LoginButtons">
 							<input id="signupButton" name="Submit2" type="button" value="Sign Up"/>
+							<input id="submitButton" name="Submit"  type="submit" value="Submit"/>
 						</div>
 					</form>
 					<div class="content" id="SignUp">
@@ -36,27 +36,23 @@
 						<form id="signup_form" action="javascript:login.signup()">
 							<div id ="firstName">
 								<!-- <p><label for="username">First Name: </label></p> -->
-								<p><input id = "first" type ="text" name = "firstname" required placeholder="First Name"></p>
+								<p><input class="signupTextbox" id = "first" type ="text" name = "firstname" required placeholder="First Name"></p>
 							</div>
 							<div id ="lastName">
-								<!-- <p><label for="lastname">Last Name: </label></p> -->
-								<p><input id = "last" type ="text" name = "lastname" required placeholder="Last Name"></p>
+								<p><input class="signupTextbox" id = "last" type ="text" name = "lastname" required placeholder="Last Name"></p>
 							</div>
 							<div id ="usernameField">
-								<!-- <p><label for="username">Username: </label></p> -->
-								<p><input id = "username" type ="text" name = "username" required placeholder="Username"></p>
+								<p><input class="signupTextbox" id = "username" type ="text" name = "username" required placeholder="Username"></p>
 							</div>
 							<div id="passwordField">
-								<!-- <p><label for="password">Password: </label></p> -->
-								<p><input id = "password1" type="password" required name="password" placeholder="Password"/></p>
+								<p><input class="signupTextbox" id = "password1" type="password" required name="password" placeholder="Password"/></p>
 							</div>
 							<div id="passwordField">
-								<!-- <p><label for="password">Re-Type Password: </label></p> -->
-								<p><input id = "password2" type="password" required name="password" placeholder="Re-Type Password"/></p>
+								<p><input class="signupTextbox" id = "password2" type="password" required name="password" placeholder="Re-Type Password"/></p>
 							</div>
-							<div>
+							<div id="SignupButtons">
+								<input id="BackToLogIn" name="Submit2" type="button" value="Back to Log In"/>
 								<input type="submit" value="Submit" />
-								<input id="BackToLogIn" name="Submit2" type="button" value="Log In"/>
 							</div>
 						</form>
 					</div>
@@ -106,25 +102,27 @@
 
 			<div class="bottomBar">
 					<button id="createGroupButton" onclick="addgroup.createNewGroup()">Go To Group</button>
-
 			</div>
 		</div>
 		</div>
 
 		<div id="chat">
 			<div class="page">
+
 			<div class="bar" id="chatBar">
 				<div id="backToGroups" class="chatBarButton" onclick="chat.back()">Grps</div>
 				<div id="chatBarTitle"></div>
 				<div id="goToMap" class="chatBarButton" onclick="chat.map()">Map</div>
 			</div>
-			<div id="messagesContainer">
+
+			<div class="content">
 				<div id="loadHistoryDiv">
 					<button id="loadHistory" onclick="chat.loadMoreMessages()">Load Previous Messages</button>
 				</div>
 				<ul id="messages"></ul>
 			</div>
-			<div id="enterContainer">
+
+			<div id="chatFooter">
 				<div id="enterMessage">
 					<form id="chatform">
 					<textarea id="input" name="Text" type="text" rows="3" placeholder="Enter Message"></textarea>
@@ -159,7 +157,11 @@
 
 
 		<script src="jquery-1.9.0.js"></script>
+<<<<<<< HEAD
 		<script src="http://128.237.203.152:8888/socket.io/socket.io.js"></script>
+=======
+		<script src="http://128.237.199.6:8888/socket.io/socket.io.js"></script>
+>>>>>>> Crazy Style Changes
 		<script src="shit.js"></script>
 	</body>
 </html>
