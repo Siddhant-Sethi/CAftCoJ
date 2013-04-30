@@ -722,6 +722,12 @@ var gmap = {
       //window.location.href = 'event.html#' + encodeURI(userString) + "$" + JSON.stringify(marker.getPosition());
   },
 
+  backToMap: function() {
+    $('#event').css({'display': 'none'});
+    $('#map').css({'display': 'block'});
+    gmap.events[gmap.events.length - 1].setMap(null);
+  },
+
   addEvent: function() {
     //gmap.getMarkerPosition();
     //console.log(gmap.events);
@@ -730,6 +736,8 @@ var gmap = {
     // console.log("addevent marker", marker);
     // console.log(gmap.events);
     // console.log(marker.id);
+    if ($("#name").val() === "") return;
+    alert("in add event");
     var marker = gmap.events[gmap.markerIndex];
     var pos = marker.getPosition();
     var date = new Date();
