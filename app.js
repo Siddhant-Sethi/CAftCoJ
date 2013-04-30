@@ -17,6 +17,7 @@ var Groups = require('./Groups');
 
 init();
 
+var y = 0;
 
 // ========================
 // === Socket.io server ===
@@ -48,7 +49,8 @@ io.sockets.on('connection', function(socket) {
         console.log("GOT CHAT MSG");
         storeMsgInGroup(data);
         socket.emit('status', {success: 'true'});
-        console.log("Emitting!");
+        y++;
+        console.log("Emitting!", y);
         socket.broadcast.to(data.grpID).emit('newmsg', data);
         //socket.broadcast.to(data.grpID).emit('chatNotif', data);
         //console.log("data.date", typeof(data.date));

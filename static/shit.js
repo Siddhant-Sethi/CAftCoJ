@@ -69,7 +69,7 @@ var login = {
                 function success(data){
                     //alert(JSON.stringify(data));
                     if (data.error) {
-                      alert(data.msg);
+                      //alert(data.msg);
                       return;
                     }
                     localStorage.user = u;
@@ -114,7 +114,7 @@ function logoutPerson() {
 
 var groups = {
   init: function() {
-    //groups.plusImage = 'plus.png';
+    localStorage.grpID = undefined;
     //$("#addGroupButton").click(groups.newGroup());
     groups.getGroups(function(groupsArray) {
       console.log("Got groups Array!:", groupsArray);
@@ -163,6 +163,7 @@ var groups = {
         $('#groups').css({'display': 'none'});
         $('#chat').css({'display': 'block'});
         chat.init($(this)[0].id);
+        localStorage.grpID = $(this)[0].id;
         container.empty();
         // if ($(this)[0].className.indexOf("true") !== -1) {
         //   $(this).removeClass("true");
@@ -300,6 +301,7 @@ var addgroup = {
 var chat = {
   init: function(grpID) {
     chat.configureDisplays();
+    localStorage.grpID = grpID;
     chat.getGroup(grpID, function(data) {
       console.log("got group from server!");
       chat.group = data.group;
@@ -331,20 +333,25 @@ var chat = {
   },
 
   initSocket: function() {
-    console.log("this is the chat group:", chat.group);
-    chat.socket = io.connect("http://128.237.187.205:8888");
-    //console.log("this is the socket session id:", chat.socket.socket);
-    //chat.listen();
-    chat.initUserSocket();
-    $('#input').keydown(function() {
-          if (event.keyCode == 13) {
-              chat.sendMessageClick();
-              return false;
-           }
-      });
-    $("#chatform").submit(chat.sendMessageClick);
-    chat.status();
-    chat.newmsg();
+    chat.getGroup(localStorage.grpID, function(data) {
+      console.log("got group from server!");
+      chat.group = data.group;
+      chat.socket = io.connect("http://128.237.203.152:8888");
+      //console.log("this is the socket session id:", chat.socket.socket);
+      //chat.listen();
+      chat.initUserSocket();
+      $('#input').keydown(function() {
+            if (event.keyCode == 13) {
+                chat.sendMessageClick();
+                return false;
+             }
+        });
+      $("#chatform").submit(chat.sendMessageClick);
+      chat.status();
+      chat.newmsg();
+    }, function(err) {
+      console.log("could not get group for chat from server because:", JSON.stringify(err));
+    });
   },
 
   listen: function() {
@@ -491,8 +498,14 @@ var chat = {
   newmsg: function() {
     chat.socket.on("newmsg", function(data) {
       if (data.grpID !== chat.group._id) return;
+      if (chat.thisMessage && chat.thisDate) {
+        if (chat.thisMessage === data.body && chat.thisDate === data.date) return;
+      }
+      console.log("message new message!", data.body);
       var currentTime = new Date(data.date);
       chat.repeat(data.body, currentTime, "left", "append", data.user);
+      chat.thisMessage = data.body;
+      chat.thisDate = data.date;
     });
   }
 }
@@ -590,9 +603,10 @@ var gmap = {
     });
     console.log("comes here");
     
-
+    //alert("here");
+    console.log("people", gmap.userArray);
     gmap.personLoop(gmap.userArray);
-    gmap.eventLooop(gmap.serverEvents);
+    gmap.eventLoop(gmap.serverEvents);
 
 
   },
@@ -603,7 +617,7 @@ var gmap = {
     }
   },
 
-createGroupEvent: function(singleEvent) {
+  createGroupEvent: function(singleEvent) {
       var myLatLong = new google.maps.LatLng(singleEvent.lat, singleEvent.lon);
       var marker = new google.maps.Marker({
           position: myLatLong,
@@ -771,15 +785,15 @@ createGroupEvent: function(singleEvent) {
   loadPeople: function() {
     gmap.getAllUsers(gmap.group._id, function(data){
       gmap.userArray = data.userArray;
-      console.log("data.userArray ",data.userArray);
+      //console.log("data.userArray ",data.userArray);
       //gmap.createOtherPeople(data.userArray);
+      navigator.geolocation.getCurrentPosition(function(position) {
+        gmap.createNewPerson(position.coords.latitude, position.coords.longitude);
+      });
     },
     function() {
       console.log("Error: Did not get users from group");
     });
-    navigator.geolocation.getCurrentPosition(function(position) {
-        gmap.createNewPerson(position.coords.latitude, position.coords.longitude);
-      });
   },
 
  
@@ -1007,6 +1021,7 @@ var settings = {
   returnToGroups: function() {
     $('#groups').css({'display': 'block'});
     $('#Settings').css({'display': 'none'});
+    groups.init();
   },
 
 getCurrentUser: function(user, onSuccess, onError) {
