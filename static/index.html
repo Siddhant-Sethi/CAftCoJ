@@ -22,7 +22,7 @@
 							<input class="loginTextbox" id="user-input" type ="text" name = "username"	required placeholder="Username">
 						</div>
 						<div id="passwordField">
-							<input class="loginTextbox" id = "password-input" type="password" name="password" required placeholder="password"/>
+							<input class="loginTextbox" id = "password-input" type="password" name="password" required placeholder="Password"/>
 						</div>
 						<div id="loginFail"></div>
 						<div id="LoginButtons">
@@ -106,17 +106,17 @@
 		</div>
 
 		<div id="chat">
-			<div class="page">
+		<div class="page">
 
 			<div class="bar" id="chatBar">
-				<div id="backToGroups" class="chatBarButton" onclick="chat.back()">Grps</div>
+				<div id="backToGroups" class="chatBarButton" onclick="chat.back()"></div>
 				<div id="chatBarTitle"></div>
-				<div id="goToMap" class="chatBarButton" onclick="chat.map()">Map</div>
+				<div id="goToMap" class="chatBarButton" onclick="chat.map()"></div>
 			</div>
 
 			<div id="messagesContainer" class="content">
 				<div id="loadHistoryDiv">
-					<button id="loadHistory" onclick="chat.loadMoreMessages()">Load Previous Messages</button>
+					<button id="chatLoadButton" id="loadHistory" onclick="chat.loadMoreMessages()">Load Previous Messages</button>
 				</div>
 				<ul id="messages"></ul>
 			</div>
@@ -125,7 +125,7 @@
 				<div id="enterMessage">
 					<form id="chatform">
 					<textarea id="input" name="Text" type="text" rows="3" placeholder="Enter Message"></textarea>
-					<input id="sendButton" name="Submit"  type="submit" value="Send"/>
+					<input id="sendButton" name="Submit"  type="submit" value=""/>
 					</form>
 				</div>
 			</div>

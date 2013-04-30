@@ -268,9 +268,19 @@ li {
 
 /*Chat Page*/
 #chat .content	{
+	top: 50px;
 	bottom: 75px;
 }
 
+#chatLoadButton	{
+	font-size: 12px;
+	margin: 20px 0;
+	padding: 5px;
+	border-radius: 5px;
+	border: 2px solid green;
+	background-color: black;
+	color: white;
+}
 
 #chatFooter {
 	border-top: 1px solid black;
@@ -296,10 +306,20 @@ li {
 
 #backToGroups	{
 	float: left;
+	background-image: url("Group.png");
+	background-size: 30px;
+	height: 30px;
+	width: 30px;
+	margin: 10px 20px;
 }
 
 #goToMap	{
 	float: right;
+	background-image: url("Earth.png");
+	background-size: 30px;
+	height: 30px;
+	width: 30px;
+	margin: 10px 20px;
 }
 
 .chatBarButton {
@@ -313,9 +333,14 @@ li {
 
 #chatBarTitle {
 	height: 30px;
-	text-align: center;
-	font-weight: bold;
+	font: 30px bold;
 	display: inline-block;
+	text-align: center;
+	line-height: 1.4em;
+	margin: 0px;
+	padding: 2px 0px;
+	text-shadow: 2px 2px white;
+	
 	/*margin-left: 150px;
 	margin-right: 150px;*/
 }
@@ -339,9 +364,16 @@ li {
 }
 
 #sendButton {
-    float: right;    
-    margin: 0;
-    width: 18%;
+	margin: 0;
+	padding: 0;
+	border-radius: 0;
+	background-image: url("check-icon.png");
+    float: right;
+    background-size: 40px;
+    border: none;
+    background-color: transparent;
+    width: 41px;
+    height: 40px;
 }
 
 .entry {
@@ -352,13 +384,36 @@ li {
 
 .tab {
 	display: inline-block;
-	padding-left: 20px;
-	padding-right: 20px;
-	padding-top: 5px;
-	padding-bottom: 5px;
-	border-style: solid;
-	border-color: black;
-	border: 2px;
+	float: left;
+	margin: 5px 9%;
+}
+
+#backToChat	{
+	background-image: url('message-icon.png');
+	background-size: 30px;
+	height: 30px;
+	width: 30px;
+}
+
+#membersTab	{
+	background-image: url('members.png');
+	background-size: 31px;
+	height: 30px;
+	width: 30px;
+}
+
+#mapTab	{
+	background-image: url('Earth.png');
+	background-size: 28px;
+	height: 28px;
+	width: 28px;
+}
+
+#logTab	{
+	background-image: url('log.png');
+	background-size: 25px 25px;
+	height: 25px;
+	width: 25px;
 }
 
 .eventEntry {
@@ -384,7 +439,10 @@ li {
 
 
 #map-canvas {
-	height: 100%;
+	position: absolute;
+	top: 40px;
+	bottom: 0;
+	width: 100%;
 }
 
 .alert {

@@ -568,33 +568,40 @@ var gmap = {
       $("#backToChat").click(function() {
         window.location.href = "index.html#chat";
       });
-      $("#mapTab").css('background-color', "#23BF7F");
+      $("#mapTab").css('background-color', "green");
+      $("#mapTab").css('border', "black 2px outset");
       $("#logTab").css('background-color', "#23BF00");
       $("#membersTab").css('background-color', "#23BF00");
       $('#eventLog').css({'display': 'none'});
       $('#map-canvas').css({'display': 'block'});
       $('#membersPage').css({'display': 'none'});
       $("#logTab").click(function() {
-        $(this).css('background-color', "#23BF7F");
+        $(this).css('background-color', "green");
+        $(this).css('border', "black 2px outset");
         $("#mapTab").css('background-color', "#23BF00");
         $("#membersTab").css('background-color', "#23BF00");
+        $("#mapTab,#membersTab").css('border', "none");
         $('#eventLog').css({'display': 'block'});
         $('#map-canvas').css({'display': 'none'});
         $('#membersPage').css({'display': 'none'});
         log.init();
       });
       $("#mapTab").click(function() {
-        $(this).css('background-color', "#23BF7F");
+        $(this).css('background-color', "green");
+        $(this).css('border', "black 2px outset");
         $("#logTab").css('background-color', "#23BF00");
         $("#membersTab").css('background-color', "#23BF00");
+        $("#logTab,#membersTab").css('border', "none");
         $('#eventLog').css({'display': 'none'});
         $('#map-canvas').css({'display': 'block'});
         $('#membersPage').css({'display': 'none'});
       });
       $("#membersTab").click(function() {
-        $(this).css('background-color', "#23BF7F");
+        $(this).css('background-color', "green");
+        $(this).css('border', "black 2px outset");
         $("#logTab").css('background-color', "#23BF00");
         $("#mapTab").css('background-color', "#23BF00");
+        $("#mapTab,#logTab").css('border', "none");
         $('#eventLog').css({'display': 'none'});
         $('#map-canvas').css({'display': 'none'});
         $('#membersPage').css({'display': 'block'});
