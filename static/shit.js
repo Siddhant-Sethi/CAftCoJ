@@ -353,13 +353,14 @@ var chat = {
   initSocket: function() {
     //console.log("SKJFBVNKSAF", localStorage.grpID === "undefined");
     chat.socket = io.connect("http://128.237.203.152:8888");
+    chat.listen();
+    chat.initUserSocket();
     if (localStorage.grpID === "undefined" || localStorage.grpID === undefined) return;
     chat.getGroup(localStorage.grpID, function(data) {
       console.log("got group from server!");
       chat.group = data.group;
       //console.log("this is the socket session id:", chat.socket.socket);
-      chat.listen();
-      chat.initUserSocket();
+      
       $('#input').keydown(function() {
             if (event.keyCode == 13) {
                 chat.sendMessageClick();
@@ -376,10 +377,14 @@ var chat = {
 
   listen: function() {
     chat.socket.on("chatNotif", function(data) {
+      //console.log($("#chat")[0].attributes);
       if (decodeURI(window.location.href).indexOf("map") !== -1) {
         console.log("nothing");
       }
-      else if ($("#chat")[0].attributes[1].value.indexOf("block") !== -1 && chat.group._id === data.grpID) return;
+      else if ($("#chat")[0].attributes[1].value.indexOf("block") !== -1 && chat.group._id === data.grpID) {
+        return;
+      }
+      console.log("comes here");
       if (chat.prevMessage && chat.prevDate) {
         if (chat.prevMessage === data.body && chat.prevDate === data.date) return;
       }
@@ -1190,7 +1195,18 @@ $(document).ready(function() {
     getDefaultID(function(data) {
       defaultID = data.id;
       console.log("defaultID = ", defaultID);
-      itIsReady();
+      settings.getCurrentUser(localStorage.user, function(data) {
+        if (data.success) {
+          console.log("got user from database", data);
+          itIsReady();
+        } else {
+          console.log("user doesnt exist on database");
+          localStorage.user = undefined;
+          login.init();
+        }
+      }, function() {
+      });
+      
     }, function() {
       console.log("Failed to get default group id");
     });

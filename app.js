@@ -183,9 +183,13 @@ function init(){
         }
     });
 
-    User.find({}, function(err, user){
-                //console.log("user in init:", user);
-            });
+    // Groups.remove({}, function(err){
+    //         console.log("group removed");
+    //     });
+
+    // User.remove({}, function(err){
+    //         console.log("user removed");
+    //     });
     
     //console.log("Groups", Groups);
 }
