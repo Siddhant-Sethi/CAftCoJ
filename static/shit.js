@@ -59,6 +59,10 @@ var login = {
     var lastName = $("#last");
     var password1 = $("#password1");
     var password2 = $("#password2");
+    if (u === "" || firstName.val() === "" || lastName.val() === "" || password1.val() === "" || password2.val() === "") {
+      alert("Please fill out all entries!");
+      return;
+    }
     if (password2.val() !== password1.val()) login.passDiff = true;
     //if (user.val() in database) signup.userTaken = true;
     if (login.passDiff === false) {
@@ -132,6 +136,7 @@ var groups = {
       var li = $("<li>");
       li[0].id = grps[i]._id;
       li.addClass("groupEntry");
+      li.css("overflow", "hidden");
       var nameDiv = $("<div>");
       nameDiv.html(grps[i].name);
       nameDiv.css("padding", "10px");
@@ -221,6 +226,7 @@ var addgroup = {
       var li = $("<li>");
       li[0].id = a[i].username;
       li.addClass("userEntry");
+      li.css("overflow", "hidden");
       var nameDiv = $("<div>");
       nameDiv.html(a[i].first + " " + a[i].last);
       nameDiv.css("padding", "10px");
@@ -250,8 +256,8 @@ var addgroup = {
       alert("Please enter a group name!");
       return; 
     }
-    if (groupName.length >= 20) {
-      groupName = groupName.slice(0, 20) + "...";
+    if (groupName.length >= 13) {
+      groupName = groupName.slice(0, 13) + "...";
     }
     var users = [localStorage.user];
     var allEntries = $(".true");
@@ -454,7 +460,7 @@ var chat = {
     if (input === "") return; 
     $("#input").val("");
     var date = new Date();
-    var data = {body: input, date: date.toString(), grpID: chat.group._id, user: localStorage.user};
+    var data = {body: input, date: date.toString(), grpID: chat.group._id, user: localStorage.user, name: chat.group.name};
     chat.socket.emit('msg', data);
     console.log("data.date", data.date);
     //console.log("new date", new Date());
@@ -752,14 +758,17 @@ var gmap = {
     // console.log("addevent marker", marker);
     // console.log(gmap.events);
     // console.log(marker.id);
-    if ($("#name").val() === "") return;
-    alert("in add event");
+    if ($("#name").val() === "") {
+      alert("Please enter an event name");
+      return;
+    }
+    //alert("in add event");
     var marker = gmap.events[gmap.markerIndex];
     var pos = marker.getPosition();
     var date = new Date();
     var infowindow = new google.maps.InfoWindow({
           content: "Event Name: " + $("#name").val() + "\n<br>Start Time: " + $("#start").val() 
-                      + "\n<br>End Time: " + $("#end").val() + "\n<br>Date: " + $("#chooseDate").val() + "\n<br>Created: " + date
+                      + "\n<br>End Time: " + $("#end").val() + "\n<br>Date: " + $("#chooseDate").val()
     });
     //infowindow.setContent(marker.content);
     //gmap.map.setCenter(marker.getPosition());
@@ -775,6 +784,7 @@ var gmap = {
 
     gmap.addEventToServer(newEvent, function(){
       console.log("Event added to group");
+      $("#name").val("");
     },
     function() {
       console.log("Error: event not added");
@@ -879,6 +889,7 @@ var mem = {
       return;
     }
     for (var i = 0; i < a.length; i++) {
+      //console.log("SIHBDVKSJDC", a[i].username);
       if (a[i].username === localStorage.user) continue;
       var userInAlready = false;
       for (var j = 0; j < mem.userArray.length; j++) {
@@ -888,6 +899,7 @@ var mem = {
       var li = $("<li>");
       li[0].id = a[i].username;
       li.addClass("userEntry");
+      li.css("overflow", "hidden");
       var nameDiv = $("<div>");
       nameDiv.html(a[i].first + " " + a[i].last);
       nameDiv.css("padding", "10px");
@@ -939,6 +951,7 @@ var mem = {
     for (var i = 0; i < users.length; i++) {
       var li = $("<li>");
       li.addClass("userEntry");
+      li.css("overflow", "hidden");
       li.attr("id", users[i].username);
       var nameDiv = $("<div>");
       nameDiv.html(users[i].first + " " + users[i].last);
