@@ -899,6 +899,7 @@ var mem = {
     for (var i = 0; i < users.length; i++) {
       var li = $("<li>");
       li.addClass("userEntry");
+      li.attr("id", users[i].username);
       var nameDiv = $("<div>");
       nameDiv.html(users[i].first + " " + users[i].last);
       nameDiv.css("padding", "10px");
@@ -906,6 +907,23 @@ var mem = {
       li.append(nameDiv);
       li.mousedown(function() {
         $(this).css("background-color", "#99FFCC");
+        for (var j = 0; j < gmap.userArray.length; j++) {
+          if ($(this).attr("id") === gmap.userArray[j].username) {
+            $('#membersPage').css({'display': 'none'});
+            $('#map-canvas').css({'display': 'block'});
+            //var latlng = new google.maps.LatLng(40.453723434964814,-79.93172764778137);
+            console.log("user", gmap.userArray[j]);
+            var latlng = new google.maps.LatLng(gmap.userArray[j].lastLocation.lat,
+                                                gmap.userArray[j].lastLocation.lon);
+            console.log("tits", latlng);
+            //console.log("gmapOptions", gmap.map.center);
+            gmap.map.panTo(latlng);
+
+            //gmap.map.center = latlng;
+            //console.log("gmapOptions", gmap.map.center);
+            console.log("should be after recentering");
+          }
+        }
       });
       li.mouseup(function() {
         $(this).css("background-color", "#FFFFFF");
@@ -984,8 +1002,26 @@ var log = {
       createdDiv.css("padding", "10px");
       createdDiv.css("font-size", "27px");
       li.append(createdDiv);
+      li.attr("id", log.group.events[i].created);      
       li.mousedown(function() {
         $(this).css("background-color", "#99FFCC");
+        for (var j = 0; j < gmap.serverEvents.length; j++) {
+          if ($(this).attr("id") === gmap.serverEvents[j].created) {
+            $('#eventLog').css({'display': 'none'});
+            $('#map-canvas').css({'display': 'block'});
+            //var latlng = new google.maps.LatLng(40.453723434964814,-79.93172764778137);
+            console.log("user", gmap.userArray[j]);
+            var latlng = new google.maps.LatLng(gmap.serverEvents[j].lat,
+                                                gmap.serverEvents[j].lon);
+            console.log("tits", latlng);
+            //console.log("gmapOptions", gmap.map.center);
+            gmap.map.panTo(latlng);
+
+            //gmap.map.center = latlng;
+            //console.log("gmapOptions", gmap.map.center);
+            console.log("should be after recentering");
+          }
+        }
       });
       li.mouseup(function() {
         $(this).css("background-color", "#FFFFFF");
