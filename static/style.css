@@ -505,3 +505,13 @@ li {
 #listOfEvents	{
 	font-size: smaller;
 }
+
+#backToMapButton {
+	display: inline-block;
+	border: 2px outset buttonface;
+	box-sizing: border-box;
+}
+
+.block {
+	display: block;
+}
