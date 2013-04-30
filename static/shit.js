@@ -988,7 +988,7 @@ var log = {
       nameDiv.css("font-size", "27px");
       li.append(nameDiv);
       var dateDiv = $("<div>");
-      dateDiv.html("Date: " + log.group.events[i].data);
+      dateDiv.html("Date: " + log.group.events[i].date);
       dateDiv.css("padding", "10px");
       dateDiv.css("font-size", "20px");
       li.append(dateDiv);
