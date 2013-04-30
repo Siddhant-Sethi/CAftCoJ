@@ -354,7 +354,7 @@ var chat = {
 
   initSocket: function() {
     //console.log("SKJFBVNKSAF", localStorage.grpID === "undefined");
-    chat.socket = io.connect("http://128.237.203.152:8888");
+    chat.socket = io.connect("http://128.237.196.32:8888");
     chat.listen();
     chat.initUserSocket();
     if (localStorage.grpID === "undefined" || localStorage.grpID === undefined) return;
@@ -1066,22 +1066,22 @@ var log = {
       var nameDiv = $("<div>");
       nameDiv.html("Name: " + log.group.events[i].name);
       nameDiv.css("padding", "10px");
-      nameDiv.css("font-size", "27px");
+      nameDiv.css("font-size", "18px");
       li.append(nameDiv);
       var dateDiv = $("<div>");
       dateDiv.html("Date: " + log.group.events[i].date);
       dateDiv.css("padding", "10px");
-      dateDiv.css("font-size", "20px");
+      dateDiv.css("font-size", "18px");
       li.append(dateDiv);
       var timeDiv = $("<div>");
       timeDiv.html("Start: " + log.group.events[i].start + ", End: " + log.group.events[i].end);
       timeDiv.css("padding", "10px");
-      timeDiv.css("font-size", "20px");
+      timeDiv.css("font-size", "18px");
       li.append(timeDiv);
       var createdDiv = $("<div>");
       createdDiv.html("Created: " + log.group.events[i].created);
       createdDiv.css("padding", "10px");
-      createdDiv.css("font-size", "27px");
+      createdDiv.css("font-size", "18px");
       li.append(createdDiv);
       li.attr("id", log.group.events[i].created);      
       li.mousedown(function() {

@@ -387,7 +387,7 @@ li {
 .tab {
 	display: inline-block;
 	/*float: left;*/
-	margin: 3px 8%;
+	margin: 4px 7.6%;
 }
 
 #backToChat	{
@@ -451,6 +451,15 @@ li {
 	width: 100%;
 }
 
+#listOfEvents	{
+	max-height: 100%;
+	overflow-y: scroll;
+	text-align: left;
+	width: 80%;
+	margin: 0 12.5%;
+	padding: 0;
+}
+
 .alert {
 	color: red;
 }
@@ -485,11 +494,14 @@ li {
 	background-color: red;
 }
 
-#listOfMembers li, #listOfAllUsers li {
+#listOfMembers li, #listOfAllUsers li, #listOfEvents li {
 	overflow: hidden;
 	margin: 2px 0;
 	border: 1px solid black;
 	background-color: rgba(153, 255, 255, .2);
 	display: block;
+}
 
+#listOfEvents	{
+	font-size: smaller;
 }
