@@ -145,7 +145,7 @@ var groups = {
       nameDiv.html(grps[i].name);
       nameDiv.css("padding", "10px");
       nameDiv.css("padding-bottom", "6px");
-      nameDiv.css("font-size", "27px");
+      nameDiv.css("font-size", "22px");
       nameDiv.css("font-weight", "bold");
       nameDiv.css("display", "block");
       li.append(nameDiv);
@@ -260,8 +260,8 @@ var addgroup = {
       alert("Please enter a group name!");
       return; 
     }
-    if (groupName.length >= 13) {
-      groupName = groupName.slice(0, 13) + "...";
+    if (groupName.length >= 17) {
+      groupName = groupName.slice(0, 17) + "...";
     }
     var users = [localStorage.user];
     var allEntries = $(".true");
@@ -341,6 +341,8 @@ var chat = {
 
   initStuff: function() {
     $("#chatBarTitle").html(chat.group.name);
+    $("#chatBarTitle").css("font-size", "18px");
+    $("#chatBarTitle").css("padding-top", "10px");
   },
 
   initUserSocket: function() {
@@ -894,7 +896,7 @@ var mem = {
       mem.displayMembers(mem.userArray);
       $("#membersTitle").html(gmap.group.name);
       $("#addMembersButton1").css("display", "none");
-      $("#addMembersButton").css("display", "block");
+      $("#addMembersButton").css("display", "inline-block");
       $("#listOfMembers").css("display", "block");
       $("#listOfAllUsers").css("display", "none");
       $("#addMembersBack").css("display", "none");
@@ -951,7 +953,7 @@ var mem = {
     $("#listOfAllUsers").css("display", "none");
     $("#addMembersButton1").css("display", "none");
     $("#addMembersBack").css("display", "none");
-    $("#addMembersButton").css("display", "block");
+    $("#addMembersButton").css("display", "inline-block");
     $("#listOfMembers").css("display", "block");
   },
 
@@ -961,7 +963,7 @@ var mem = {
       mem.allUsers = data.userArray;
       mem.displayUsersToAdd();
       $("#listOfAllUsers").css("display", "block");
-      $("#addMembersButton1").css("display", "block");
+      $("#addMembersButton1").css("display", "inline-block");
       $("#addMembersBack").css("display", "inline-block");
       $("#addMembersButton").css("display", "none");
     },
