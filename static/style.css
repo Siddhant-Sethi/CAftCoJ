@@ -61,7 +61,7 @@ li {
 	display: inline-block;
 	line-height: 1.4em;
 	margin: 0px;
-	padding: 2px 0px;
+	padding: 0px 0px;
 	font-weight: bold;
 	text-shadow: 2px 2px white;
 }
@@ -88,7 +88,7 @@ li {
 }
 
 [type="submit"],[name="Submit2"],.button	{
-	font-size: 20px;
+	font-size: 15px;
 	margin: 20px 0;
 	padding: 5px;
 	border-radius: 5px;
@@ -398,6 +398,13 @@ li {
 	width: 30px;
 }
 
+#eventAdder #form {
+	top: 10px;
+	margin: 10px 0px;
+	font-size: 20px;
+	line-height: 1.5;
+}
+
 #membersTab	{
 	background-image: url('members.png');
 	float: left;
@@ -507,9 +514,9 @@ li {
 }
 
 #backToMapButton {
-	display: inline-block;
-	border: 2px outset buttonface;
-	box-sizing: border-box;
+	background-color: black;
+	color: white;
+	margin: 5px;
 }
 
 .block {

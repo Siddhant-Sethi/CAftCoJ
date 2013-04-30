@@ -354,7 +354,7 @@ var chat = {
 
   initSocket: function() {
     //console.log("SKJFBVNKSAF", localStorage.grpID === "undefined");
-    chat.socket = io.connect("http://128.237.196.32:8888");
+    chat.socket = io.connect("http://128.237.206.146:8888");
     chat.listen();
     chat.initUserSocket();
     if (localStorage.grpID === "undefined" || localStorage.grpID === undefined) return;
