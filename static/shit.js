@@ -63,7 +63,11 @@ var login = {
       alert("Please fill out all entries!");
       return;
     }
-    if (password2.val() !== password1.val()) login.passDiff = true;
+    if (password2.val() !== password1.val()) {
+      login.passDiff = true;
+      alert("Passwords do not match");
+      return;
+    } 
     //if (user.val() in database) signup.userTaken = true;
     if (login.passDiff === false) {
       var newUser = {
@@ -238,7 +242,7 @@ var addgroup = {
       li.mouseup(function() {
         if ($(this)[0].className.indexOf("true") !== -1) {
           $(this).removeClass("true");
-          $(this).css("background-color", "#99FFFF");
+          $(this).css("background-color", "rgba(153, 255, 255, .2)");
         }
         else {
           $(this).addClass("true");
@@ -610,44 +614,53 @@ var gmap = {
   },
 
   createNewPerson: function(latitude, longitude) {
-    var mapOptions = {
-      center: new google.maps.LatLng(latitude, longitude),
-      zoom: 13,
-      mapTypeId: google.maps.MapTypeId.ROADMAP,
-      draggable: true
-    };
-    var infowindow = new google.maps.InfoWindow({
-      //content: firstName + " " + lastName
-      content: "<img src=kim-kardashian-huge-tits.jpeg width=304 height=228>"
-    });
-    gmap.map = new google.maps.Map(document.getElementById("map-canvas"),
-        mapOptions);
-    var image = 'person.png';
-    console.log("myshit", gmap.map.getCenter());
-    var marker = new google.maps.Marker({
-      position: gmap.map.getCenter(),
-      map: gmap.map,
-      icon: image,
-    });
+    settings.getCurrentUser(localStorage.user, function(data){           
+      var firstName = data.firstName;
+      var lastName = data.lastName;
+      var username = data.username;
+      var mapOptions = {
+        center: new google.maps.LatLng(latitude, longitude),
+        zoom: 13,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        draggable: true
+      };
+      var infowindow = new google.maps.InfoWindow({
+        //content: firstName + " " + lastName
+        content: firstName + " " + lastName + "\n<br>" + "Username: " + username
+      });
+      gmap.map = new google.maps.Map(document.getElementById("map-canvas"),
+          mapOptions);
+      var image = 'person.png';
+      console.log("myshit", gmap.map.getCenter());
+      var marker = new google.maps.Marker({
+        position: gmap.map.getCenter(),
+        map: gmap.map,
+        icon: image,
+      });
 
-    console.log(marker);
+      console.log(marker);
 
-    google.maps.event.addListener(marker, 'click', function() {
-      infowindow.open(gmap.map, this);
-      //console.log("shit");
-      //gmap.map.setZoom(8);
-      //gmap.map.panTo(marker.getPosition());
-    });
+      google.maps.event.addListener(marker, 'click', function() {
+        infowindow.open(gmap.map, this);
+        //console.log("shit");
+        //gmap.map.setZoom(8);
+        //gmap.map.panTo(marker.getPosition());
+      });
 
-    google.maps.event.addListener(gmap.map, 'dblclick', function(event) {
-      gmap.placeMarker(event.latLng);
+      google.maps.event.addListener(gmap.map, 'dblclick', function(event) {
+        gmap.placeMarker(event.latLng);
+      });
+      console.log("comes here");
+      
+      //alert("here");
+      console.log("people", gmap.userArray);
+      gmap.personLoop(gmap.userArray);
+      gmap.eventLoop(gmap.serverEvents);
+    },
+    function() {
+      console.log("Error: Did not get user");
     });
-    console.log("comes here");
     
-    //alert("here");
-    console.log("people", gmap.userArray);
-    gmap.personLoop(gmap.userArray);
-    gmap.eventLoop(gmap.serverEvents);
 
 
   },
@@ -918,7 +931,7 @@ var mem = {
       li.mouseup(function() {
         if ($(this)[0].className.indexOf("true") !== -1) {
           $(this).removeClass("true");
-          $(this).css("background-color", "#99FFFF");
+          $(this).css("background-color", "rgba(153, 255, 255, .2)");
         }
         else {
           $(this).addClass("true");
@@ -1099,9 +1112,9 @@ var settings = {
     var lastName = $('#set_lastName');
     var username = $('#set_usernameField');
     settings.getCurrentUser(localStorage.user, function(data){
-      console.log("first", data.firstName);
-      console.log("last", data.lastName);
-      console.log("username", data.username);            
+      //console.log("first", data.firstName);
+      //console.log("last", data.lastName);
+      //console.log("username", data.username);            
       settings.firstName = data.firstName;
       settings.lastName = data.lastName;
       settings.username = data.username;
