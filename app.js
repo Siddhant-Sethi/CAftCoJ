@@ -52,7 +52,7 @@ io.sockets.on('connection', function(socket) {
         y++;
         console.log("Emitting!", y);
         socket.broadcast.to(data.grpID).emit('newmsg', data);
-        //socket.broadcast.to(data.grpID).emit('chatNotif', data);
+        socket.broadcast.to(data.grpID).emit('chatNotif', data);
         //console.log("data.date", typeof(data.date));
         //console.log("new date", typeof(new Date()));
     });

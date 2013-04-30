@@ -348,7 +348,7 @@ var chat = {
       console.log("got group from server!");
       chat.group = data.group;
       //console.log("this is the socket session id:", chat.socket.socket);
-      //chat.listen();
+      chat.listen();
       chat.initUserSocket();
       $('#input').keydown(function() {
             if (event.keyCode == 13) {
@@ -366,11 +366,22 @@ var chat = {
 
   listen: function() {
     chat.socket.on("chatNotif", function(data) {
-      console.log("new Chat message", data);
+      if (decodeURI(window.location.href).indexOf("map") !== -1) {
+        console.log("nothing");
+      }
+      else if ($("#chat")[0].attributes[1].value.indexOf("block") !== -1 && chat.group._id === data.grpID) return;
+      if (chat.prevMessage && chat.prevDate) {
+        if (chat.prevMessage === data.body && chat.prevDate === data.date) return;
+      }
+      var string = data.body;
+      if (data.body.length > 20) string = data.body.slice(0, 20) + "...";
+      alert("New Chat Message!\nGroup: " + data.name + "\nFrom: " + data.user + "\nMessage: " + string);
+      chat.prevMessage = data.body;
+      chat.prevDate = data.date;
     });
-    chat.socket.on("eventNotif", function(data) {
-      console.log("new Event", data);
-    });
+    // chat.socket.on("eventNotif", function(data) {
+    //   console.log("new Event", data);
+    // });
   },
 
   loadPastMessages: function() {
@@ -487,7 +498,7 @@ var chat = {
       if (pend === "append") $("#messages").append(li);
       if (pend === "prepend") $("#messages").prepend(li);
       var bigDiv = $("#messagesContainer");
-      console.log("bigDiv", bigDiv, pend);
+      //console.log("bigDiv", bigDiv, pend);
       if (pend === "append") {
         //bigDiv.animate({ scrollTop: bigDiv.height()}, 500);
         bigDiv[0].scrollTop = bigDiv[0].scrollHeight;
@@ -511,6 +522,7 @@ var chat = {
 
 
   newmsg: function() {
+    if (decodeURI(window.location.href).indexOf("map") !== -1) return;
     chat.socket.on("newmsg", function(data) {
       if (data.grpID !== chat.group._id) return;
       if (chat.thisMessage && chat.thisDate) {
