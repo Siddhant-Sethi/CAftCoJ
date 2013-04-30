@@ -51,23 +51,20 @@
       <div class="page">
 
       <div class="bar">
-        <ul>
-          <h1 id="logo">CAFtCoJ</h1>
-        </ul>
+          <h1 id="logo">Add an Event :</h1>
       </div>
       <div id="eventAdder" class = "content">
           <form id="form" action="javascript:gmap.addEvent()">
               <div class="content">
-                <h1 id='addEvent_title'>Add an Event :</h1>
-                <label>
+                <label class="block">
                    <span>Event Name :</span>
                    <input type="text" class="text_input" name="name" id="name"/>
                 </label>
-                <label>
+                <label class="block">
                   <span>Date :</span>
                   <input id="chooseDate" type="date" required name="dayOfEvent" />
                 </label>
-                <label>
+                <label class="block">
                    <span>Start Time :</span>
                    <select id="start">
                       <option value="12:00 AM">12:00 AM</option>
@@ -120,7 +117,7 @@
                       <option value="11:30 PM">11:30 PM</option>
                   </select>
                  </label>
-                 <label>
+                 <label class="block">
                    <span>End Time :</span>
                    <select id="end">
                       <option value="12:00 AM">12:00 AM</option>
@@ -172,9 +169,11 @@
                       <option value="11:00 PM">11:00 PM</option>
                       <option value="11:30 PM">11:30 PM</option>
               </select>
+                </label>
+                <div class="bottomBar">
                    <input type="submit" value="Submit Form" />
-                   <button id="backToMapButton" class="button" onclick="gmap.backToMap()">Back To Map</button>
-                </label>     
+                   <div id="backToMapButton" class="button" onclick="gmap.backToMap()">Back To Map</div>
+                </div>  
              </div>       
           </form>
       </div>
