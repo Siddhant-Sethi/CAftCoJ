@@ -411,7 +411,7 @@ app.post("/addgroup", function(request, response) {
             response.send({'error': true});
         }, function() {
             response.send({'success': true});
-            User.find({}, function(err, user){
+            User.findOne({username: "nigs"}, function(err, user){
                 console.log("user after adding grp ID:", user);
             });
         });
@@ -476,23 +476,26 @@ app.post("/updateLocation", function(request, response) {
         console.log("updated");
         //response.send({'success': undefined});
     }
-
 });
 
-app.post("/getGroups", function(request, response) {
-    User.findOne({username: request.body.user}, function(err, user) {
+app.get("/getGroups", function(request, response) {
+    console.log("APPARENTLY IT COMES HERE ");
+    User.findOne({username: request.query.user}, function(err, user) {
         if (err) {
             response.send({"error": "could not find user"});
             throw err;
         }
         if (!user) throw err;
-        var grpIDs = user.groups;
+        var grpIDs = user.groups.slice(0);
         var objArr = [];
+        console.log("IT COMES HERE SO ", user);
         getGroupObjects(objArr, grpIDs, function(a) {
+            console.log("SUCCESS YALL", a);
             response.send({"success": a});
         }, function() {
+            console.log("OH SHIT ERROR");
             response.send({"error": "could not get groups that user had in his groups array"});
-        })
+        });
     });
 }); 
 

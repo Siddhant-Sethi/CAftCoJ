@@ -196,8 +196,9 @@ var groups = {
   },
 
   getGroups: function(onSuccess, onError) {
+    console.log("skadhvbsafv  qkSBJDV", localStorage.user);
     $.ajax({
-      type: "post",
+      type: "get",
       data: {user: localStorage.user},
       url: "/getGroups",
       success: onSuccess,
@@ -263,6 +264,7 @@ var addgroup = {
     if (groupName.length >= 17) {
       groupName = groupName.slice(0, 17) + "...";
     }
+    //console.log("BITEHCS", localStorage.user);
     var users = [localStorage.user];
     var allEntries = $(".true");
     if (allEntries.length === 0) {
@@ -280,7 +282,7 @@ var addgroup = {
     //console.log(users);
     var data = {name: groupName, users: users};
     addgroup.sendGroupToServer(data, function() {
-      console.log("successfully sent group to server");
+      console.log("successfully sent group to server:", data);
       $('#groups').css({'display': 'block'});
       $('#addgroup').css({'display': 'none'});
       groups.init();
@@ -354,7 +356,11 @@ var chat = {
 
   initSocket: function() {
     //console.log("SKJFBVNKSAF", localStorage.grpID === "undefined");
+<<<<<<< HEAD
     chat.socket = io.connect("http://128.237.206.146:8888");
+=======
+    chat.socket = io.connect("http://128.237.203.152:8888");
+>>>>>>> before addresses
     chat.listen();
     chat.initUserSocket();
     if (localStorage.grpID === "undefined" || localStorage.grpID === undefined) return;
@@ -1155,6 +1161,7 @@ getCurrentUser: function(user, onSuccess, onError) {
 
 function updateYourLocation() {
   navigator.geolocation.getCurrentPosition(function(position) {
+    //var infowindow = new google.maps.InfoWindow();
     gmap.updateLocation(position.coords.latitude, position.coords.longitude, function(){
       console.log("failed to update your location in the server");
     }, function() {
