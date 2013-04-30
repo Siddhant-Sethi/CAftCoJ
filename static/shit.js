@@ -1,6 +1,6 @@
 var login = {
   init: function() {
-    localStorage.user = undefined;
+    //localStorage.user = undefined;
     $('#login').css({'display': 'block'});
     $("#signupButton").click(function() {
       $("#SignUp").css({'display': 'block'});
@@ -24,13 +24,7 @@ var login = {
                  function success(data){
                     //alert(JSON.stringify(data));
                     localStorage.user = u;
-                    chat.initSocket();
-                    //chat.addSocketToGroups();
-                    //login.user = user.val();
-                    $('#login').css({'display': 'none'});
-                    $('#groups').css({'display': 'block'});
-                    groups.init();
-                    updateYourLocation();
+                    login.weReady();
                     //window.location.href = 'groups.html#' + encodeURI(user.val());
                 },
                 function error(xhr, status, err){
@@ -46,6 +40,15 @@ var login = {
     success: onSuccess,
     error: onError
     });
+  },
+
+  weReady: function() {
+    chat.initSocket();
+    $('#login').css({'display': 'none'});
+    $('#groups').css({'display': 'block'});
+    console.log("we ready");
+    groups.init();
+    updateYourLocation();
   },
 
   signup: function() {
@@ -73,11 +76,7 @@ var login = {
                       return;
                     }
                     localStorage.user = u;
-                    $('#login').css({'display': 'none'});
-                    $('#groups').css({'display': 'block'});
-                    chat.initSocket();
-                    updateYourLocation();
-                    //window.location.href = 'groups.html#' + encodeURI(user.val());
+                    login.weReady();
                 },
                 function error(data){
                   console.log("data err", data);
@@ -106,6 +105,7 @@ function logoutPerson() {
     type: "get",
     url: "/logout",
     success: function() {
+      localStorage.user = undefined;
       window.location.href = "index.html";
     },
     error: function() {console.log("error")}
@@ -204,7 +204,7 @@ var addgroup = {
       addgroup.userArray = data.userArray;
       console.log("data.userArray ",data.userArray);
       addgroup.displayUsers();
-      $("#backButton").dblclick(addgroup.back());
+      //$("#backButton").dblclick(addgroup.back());
       //gmap.createOtherPeople(data.userArray);
     },
     function() {
@@ -250,8 +250,15 @@ var addgroup = {
       alert("Please enter a group name!");
       return; 
     }
+    if (groupName.length >= 20) {
+      groupName = groupName.slice(0, 20) + "...";
+    }
     var users = [localStorage.user];
     var allEntries = $(".true");
+    if (allEntries.length === 0) {
+      alert("Please pick group members!");
+      return;
+    }
     for (var i = 0; i < allEntries.length; i++) {
       //console.log(allEntries[i].id);
       users.push(allEntries[i].id);
@@ -279,11 +286,11 @@ var addgroup = {
 
   back: function() {
     console.log("CLICKED BK");
-    // $('#groups').css({'display': 'block'});
-    // $('#addgroup').css({'display': 'none'});
-    // groups.init();
-    // $("#groupName").val("");
-    // $("#listOfUsers").empty();
+    $('#groups').css({'display': 'block'});
+    $('#addgroup').css({'display': 'none'});
+    groups.init();
+    $("#groupName").val("");
+    $("#listOfUsers").empty();
   },
 
   sendGroupToServer: function(data, onSuccess, onError) {
@@ -301,6 +308,7 @@ var addgroup = {
 var chat = {
   init: function(grpID) {
     chat.configureDisplays();
+    if (grpID === undefined || grpID === "undefined") return;
     localStorage.grpID = grpID;
     chat.getGroup(grpID, function(data) {
       console.log("got group from server!");
@@ -327,16 +335,18 @@ var chat = {
 
   initUserSocket: function() {
     console.log("CurrentUser:", localStorage.user);
-    if (localStorage.user === undefined) return;
+    if (localStorage.user === undefined || localStorage.user === "undefined") return;
     var data = {user: localStorage.user};
     chat.socket.emit("init", data);
   },
 
   initSocket: function() {
+    //console.log("SKJFBVNKSAF", localStorage.grpID === "undefined");
+    chat.socket = io.connect("http://128.237.203.152:8888");
+    if (localStorage.grpID === "undefined" || localStorage.grpID === undefined) return;
     chat.getGroup(localStorage.grpID, function(data) {
       console.log("got group from server!");
       chat.group = data.group;
-      chat.socket = io.connect("http://128.237.203.152:8888");
       //console.log("this is the socket session id:", chat.socket.socket);
       //chat.listen();
       chat.initUserSocket();
@@ -467,6 +477,7 @@ var chat = {
       var innerP = $("<p>");
       innerP.css("padding", "10px");
       innerP.css("text-align", msgAlign);
+      innerP.css("word-wrap", "break-word");
       innerP.html(input);
       innerDiv.append(timeDiv);
       innerDiv.append(innerP);
@@ -513,6 +524,7 @@ var chat = {
 
 var gmap = {
   init: function() {
+    $('#membersPage').css({'display': 'none'});
     if (localStorage.grpID === undefined) alert("WTF");
     chat.getGroup(localStorage.grpID, function(data) {
       console.log("got group from server!");
@@ -571,7 +583,7 @@ var gmap = {
   createNewPerson: function(latitude, longitude) {
     var mapOptions = {
       center: new google.maps.LatLng(latitude, longitude),
-      zoom: 8,
+      zoom: 13,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
       draggable: true
     };
@@ -838,6 +850,10 @@ var mem = {
     var container = $("#listOfAllUsers");
     container.empty();
     var a = mem.allUsers;
+    if (a.length === 0) {
+      alert("There are no other users right now. Get your friends to sign up!\n\nHit the back button :)");
+      return;
+    }
     for (var i = 0; i < a.length; i++) {
       if (a[i].username === localStorage.user) continue;
       var userInAlready = false;
@@ -1096,7 +1112,12 @@ function checkLocation() {
 
 function manageState(state) {
   if (state === "index") {
-    //window.location.href = "index.html";
+
+    if (localStorage.user !== undefined && localStorage.user !== "undefined") {
+      console.log("init user", localStorage.user);
+      login.weReady();
+      return;
+    }
     login.init();
   }
   if (state === "map") {
