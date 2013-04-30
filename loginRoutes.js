@@ -16,6 +16,7 @@ module.exports = function (app) {
 
     app.post('/register', function(req, res) {
         var username = req.body.username;
+        var userExists = false;
         //console.log("User", User);
         User.findOne({username : username }, function(err, existingUser) {
             if (err){
@@ -24,9 +25,9 @@ module.exports = function (app) {
             }
             
             if (existingUser) {
+                userExists = true;
                 return res.send({'error': true, 'msg': "Username Exists!"});
             }
-
             var user = new User({ username : req.body.username });
             user.registeredTimestamp = new Date();
             user.first = req.body.first;
@@ -46,6 +47,7 @@ module.exports = function (app) {
         });
         //console.log("Groups", Groups);
         Groups.findOne({name: "default"}, function(err, defaultGroup) {
+            if (userExists) return;
             if (err)
                 throw error;
             if (defaultGroup)

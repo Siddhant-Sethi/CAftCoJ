@@ -72,7 +72,7 @@ var login = {
                 function success(data){
                     //alert(JSON.stringify(data));
                     if (data.error) {
-                      //alert(data.msg);
+                      alert("User exists");
                       return;
                     }
                     localStorage.user = u;
@@ -487,7 +487,11 @@ var chat = {
       if (pend === "append") $("#messages").append(li);
       if (pend === "prepend") $("#messages").prepend(li);
       var bigDiv = $("#messagesContainer");
-      if (pend === "append") bigDiv[0].scrollTop = bigDiv[0].scrollHeight;
+      console.log("bigDiv", bigDiv, pend);
+      if (pend === "append") {
+        //bigDiv.animate({ scrollTop: bigDiv.height()}, 500);
+        bigDiv[0].scrollTop = bigDiv[0].scrollHeight;
+      }
   },
 
   status: function() {
