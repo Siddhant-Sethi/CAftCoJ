@@ -997,6 +997,7 @@ var mem = {
                                                 gmap.userArray[j].lastLocation.lon);
             console.log("tits", latlng);
             //console.log("gmapOptions", gmap.map.center);
+            gmap.map.setZoom(16);
             gmap.map.panTo(latlng);
 
             //gmap.map.center = latlng;
@@ -1095,6 +1096,7 @@ var log = {
                                                 gmap.serverEvents[j].lon);
             console.log("tits", latlng);
             //console.log("gmapOptions", gmap.map.center);
+            gmap.map.setZoom(16);
             gmap.map.panTo(latlng);
 
             //gmap.map.center = latlng;
