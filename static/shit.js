@@ -964,10 +964,12 @@ var mem = {
     $("#addMembersBack").css("display", "none");
     $("#addMembersButton").css("display", "inline-block");
     $("#listOfMembers").css("display", "block");
+    $("#memberDescription").html("Click User to see on Map.");
   },
 
   addMembers: function() {
     console.log("clicked add members");
+    $("#memberDescription").html("Click user(s) to add to group");
     gmap.getAllUsers(defaultID, function(data){
       mem.allUsers = data.userArray;
       mem.displayUsersToAdd();
@@ -1029,6 +1031,7 @@ var mem = {
   },
 
   addNewMembers: function() {
+    $("#memberDescription").html("Click User to see on Map.");
     var users = [];
     var allEntries = $(".true");
     for (var i = 0; i < allEntries.length; i++) {

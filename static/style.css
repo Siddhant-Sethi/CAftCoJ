@@ -477,12 +477,12 @@ li {
 	padding: 0;
 }
 
-#eventLogTitle	{
+#eventLogTitle,#membersTitle	{
 	margin-top: 10px;
 	margin-bottom: 0px;
 }
 
-#eventLog h2	{
+#logDescription, #memberDescription	{
 	margin-top: 0px;
 	font-size: 10px;
 	font-style: italic;
