@@ -505,7 +505,7 @@ var chat = {
       timeDiv.css("font-size", "11px");
       timeDiv.css("color", "gray");
       var innerP = $("<p>");
-      innerP.css("padding", "10px");
+      innerP.css("padding", "5px");
       innerP.css("text-align", msgAlign);
       innerP.css("word-wrap", "break-word");
       innerP.html(input);
