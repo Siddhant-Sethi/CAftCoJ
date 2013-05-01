@@ -235,7 +235,7 @@ var addgroup = {
       var nameDiv = $("<div>");
       nameDiv.html(a[i].first + " " + a[i].last);
       nameDiv.css("padding", "10px");
-      nameDiv.css("font-size", "27px");
+      nameDiv.css("font-size", "20px");
       li.append(nameDiv);
       li.mousedown(function() {
         $(this).css("background-color", "#99FFCC");
@@ -1078,9 +1078,10 @@ var log = {
       var li = $("<li>");
       li.addClass("eventEntry");
       var nameDiv = $("<div>");
-      nameDiv.html("Name: " + log.group.events[i].name);
+      nameDiv.html(log.group.events[i].name);
       nameDiv.css("padding", "10px");
       nameDiv.css("font-size", "18px");
+      nameDiv.css("font-weight", "bold");
       li.append(nameDiv);
       var dateDiv = $("<div>");
       dateDiv.html("Date: " + log.group.events[i].date);

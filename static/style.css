@@ -207,7 +207,17 @@ li {
 	margin: 20px;
 }
 
+#listOfUsers div 	{
+	font-size: 17px;
+}
+
+#listOfUsersDiv	{
+	height: 75%;
+}
+
 #listOfUsers {
+	height: 100%;
+	overflow-y: scroll;
 	width: 75%;
 	margin: 0 12.5%;
 }
@@ -465,6 +475,19 @@ li {
 	width: 80%;
 	margin: 0 12.5%;
 	padding: 0;
+}
+
+#eventLogTitle	{
+	margin-top: 10px;
+	margin-bottom: 0px;
+}
+
+#eventLog h2	{
+	margin-top: 0px;
+	font-size: 10px;
+	font-style: italic;
+	font-weight: normal;
+	color: #2F4F4F;
 }
 
 .alert {
