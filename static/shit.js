@@ -356,11 +356,7 @@ var chat = {
 
   initSocket: function() {
     //console.log("SKJFBVNKSAF", localStorage.grpID === "undefined");
-<<<<<<< HEAD
-    chat.socket = io.connect("http://128.237.206.146:8888");
-=======
     chat.socket = io.connect("http://128.237.203.152:8888");
->>>>>>> before addresses
     chat.listen();
     chat.initUserSocket();
     if (localStorage.grpID === "undefined" || localStorage.grpID === undefined) return;
@@ -627,55 +623,58 @@ var gmap = {
   },
 
   createNewPerson: function(latitude, longitude) {
+    gmap.geocoder = new google.maps.Geocoder();
     settings.getCurrentUser(localStorage.user, function(data){           
       var firstName = data.firstName;
       var lastName = data.lastName;
       var username = data.username;
-      var mapOptions = {
-        center: new google.maps.LatLng(latitude, longitude),
-        zoom: 13,
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-        draggable: true
-      };
-      var infowindow = new google.maps.InfoWindow({
-        //content: firstName + " " + lastName
-        content: firstName + " " + lastName + "\n<br>" + "Username: " + username
+      console.log("Lat long", latitude, longitude);
+      codeLatLng(latitude, longitude, function(address) {
+        gmap.myAddress = address;
+        console.log("address", address);
+        var mapOptions = {
+          center: new google.maps.LatLng(latitude, longitude),
+          zoom: 13,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          draggable: true
+        };
+        var infowindow = new google.maps.InfoWindow({
+          //content: firstName + " " + lastName
+          content: firstName + " " + lastName + "\n<br>" + "Username: " + username + "\n<br>" + gmap.myAddress
+        });
+        gmap.map = new google.maps.Map(document.getElementById("map-canvas"),
+            mapOptions);
+        var image = 'person.png';
+        console.log("myshit", gmap.map.getCenter());
+        var marker = new google.maps.Marker({
+          position: gmap.map.getCenter(),
+          map: gmap.map,
+          icon: image,
+        });
+
+        console.log(marker);
+
+        google.maps.event.addListener(marker, 'click', function() {
+          infowindow.open(gmap.map, this);
+          //console.log("shit");
+          //gmap.map.setZoom(8);
+          //gmap.map.panTo(marker.getPosition());
+        });
+
+        google.maps.event.addListener(gmap.map, 'dblclick', function(event) {
+          gmap.placeMarker(event.latLng);
+        });
+        console.log("comes here");
+        
+        //alert("here");
+        console.log("people", gmap.userArray);
+        gmap.personLoop(gmap.userArray);
+        gmap.eventLoop(gmap.serverEvents);
+      },
+      function() {
+        console.log("Error: Did not get user");
       });
-      gmap.map = new google.maps.Map(document.getElementById("map-canvas"),
-          mapOptions);
-      var image = 'person.png';
-      console.log("myshit", gmap.map.getCenter());
-      var marker = new google.maps.Marker({
-        position: gmap.map.getCenter(),
-        map: gmap.map,
-        icon: image,
       });
-
-      console.log(marker);
-
-      google.maps.event.addListener(marker, 'click', function() {
-        infowindow.open(gmap.map, this);
-        //console.log("shit");
-        //gmap.map.setZoom(8);
-        //gmap.map.panTo(marker.getPosition());
-      });
-
-      google.maps.event.addListener(gmap.map, 'dblclick', function(event) {
-        gmap.placeMarker(event.latLng);
-      });
-      console.log("comes here");
-      
-      //alert("here");
-      console.log("people", gmap.userArray);
-      gmap.personLoop(gmap.userArray);
-      gmap.eventLoop(gmap.serverEvents);
-    },
-    function() {
-      console.log("Error: Did not get user");
-    });
-    
-
-
   },
 
   eventLoop: function(events) {
@@ -685,6 +684,7 @@ var gmap = {
   },
 
   createGroupEvent: function(singleEvent) {
+    codeLatLng(singleEvent.lat, singleEvent.lon, function(address) {
       var myLatLong = new google.maps.LatLng(singleEvent.lat, singleEvent.lon);
       var marker = new google.maps.Marker({
           position: myLatLong,
@@ -694,12 +694,14 @@ var gmap = {
       console.log("before infowindow");
       var infowindow = new google.maps.InfoWindow({
         content: "Event Name: " + singleEvent.name + "\n<br>Start Time: " + singleEvent.start 
-                      + "\n<br>End Time: " + singleEvent.end + "\n<br>Date: " + singleEvent.date
+                      + "\n<br>End Time: " + singleEvent.end + "\n<br>Date: " + singleEvent.date + "\n<br>Address: " + address
       });
       console.log("after infowindow");
       google.maps.event.addListener(marker, 'click', function() {
         infowindow.open(gmap.map, this);
       });
+    });
+      
   },
 
   personLoop: function(people) {
@@ -716,26 +718,24 @@ var gmap = {
       var lat = user.lastLocation.lat;
       var lon = user.lastLocation.lon;
       var lastLogin = user.lastLoginTimestamp;
-      console.log(lat, lon);
-      var image = 'blue.png';
-      var infowindow = new google.maps.InfoWindow({
-        content: firstName + " " + lastName + "\n<br>" + "Last Login: " + lastLogin
-        //content: "<img src=kim-kardashian-huge-tits.jpeg width=304 height=228>"
+      codeLatLng(lat, lon, function(address) {
+        console.log(lat, lon);
+        var image = 'blue.png';
+        var infowindow = new google.maps.InfoWindow({
+          content: firstName + " " + lastName + "\n<br>" + "Last Login: " + lastLogin + "\n<br>Last Location: " + address
+        });
+        var myLatLong = new google.maps.LatLng(lat, lon);
+        console.log("latlong", myLatLong);
+        var marker = new google.maps.Marker({
+          position: myLatLong,
+          map: gmap.map,
+          icon: image
+        });
+        console.log("marker", marker);
+        google.maps.event.addListener(marker, 'click', function() {
+          infowindow.open(gmap.map, this);
+        });
       });
-      var myLatLong = new google.maps.LatLng(lat, lon);
-      console.log("latlong", myLatLong);
-      var marker = new google.maps.Marker({
-        position: myLatLong,
-        map: gmap.map,
-        icon: image
-      });
-      console.log("marker", marker);
-      
-
-      google.maps.event.addListener(marker, 'click', function() {
-        infowindow.open(gmap.map, this);
-      });
-
   },
 
 
@@ -798,33 +798,36 @@ var gmap = {
     //alert("in add event");
     var marker = gmap.events[gmap.markerIndex];
     var pos = marker.getPosition();
+    console.log("POS", pos.jb);
     var date = new Date();
-    var infowindow = new google.maps.InfoWindow({
+    codeLatLng(pos.jb, pos.kb, function(address) {
+      var infowindow = new google.maps.InfoWindow({
           content: "Event Name: " + $("#name").val() + "\n<br>Start Time: " + $("#start").val() 
-                      + "\n<br>End Time: " + $("#end").val() + "\n<br>Date: " + $("#chooseDate").val()
-    });
-    //infowindow.setContent(marker.content);
-    //gmap.map.setCenter(marker.getPosition());
-    //infowindow.open(gmap.map, this);
-    google.maps.event.addListener(gmap.events[gmap.markerIndex], 'click', function() {
-      infowindow.open(gmap.map, this);
-      //gmap.map.panTo(marker.getPosition());
-    });
-    //gmap.revertEventAdder();
+                      + "\n<br>End Time: " + $("#end").val() + "\n<br>Date: " + $("#chooseDate").val() + "\n<br>Address: " + address
+      });
+      //infowindow.setContent(marker.content);
+      //gmap.map.setCenter(marker.getPosition());
+      //infowindow.open(gmap.map, this);
+      google.maps.event.addListener(gmap.events[gmap.markerIndex], 'click', function() {
+        infowindow.open(gmap.map, this);
+        //gmap.map.panTo(marker.getPosition());
+      });
+      //gmap.revertEventAdder();
 
-    var newEvent = {name: $("#name").val(), start: $("#start").val(), end: $('#end').val(), date: $("#chooseDate").val(),
-                    group: gmap.group._id, lat: pos.jb, lon: pos.kb, created: date}
+      var newEvent = {name: $("#name").val(), start: $("#start").val(), end: $('#end').val(), date: $("#chooseDate").val(),
+                      group: gmap.group._id, lat: pos.jb, lon: pos.kb, created: date}
 
-    gmap.addEventToServer(newEvent, function(){
-      console.log("Event added to group");
-      $("#name").val("");
-    },
-    function() {
-      console.log("Error: event not added");
+      gmap.addEventToServer(newEvent, function(){
+        console.log("Event added to group");
+        $("#name").val("");
+      },
+      function() {
+        console.log("Error: event not added");
+      });
+      $('#event').css({'display': 'none'});
+      $('#map').css({'display': 'block'});
+      //window.location.href = 'map.html';
     });
-    $('#event').css({'display': 'none'});
-    $('#map').css({'display': 'block'});
-    //window.location.href = 'map.html';
   },
 
   addEventToServer: function(data, onSuccess, onError) {
@@ -995,6 +998,12 @@ var mem = {
         $(this).css("background-color", "#99FFCC");
         for (var j = 0; j < gmap.userArray.length; j++) {
           if ($(this).attr("id") === gmap.userArray[j].username) {
+            $("#mapTab").css('background-color', "green");
+            $("#mapTab").css('border', "black 2px outset");
+            $("#logTab").css('background-color', "#23BF00");
+            $("#membersTab").css('background-color', "#23BF00");
+            $("#logTab,#membersTab").css('border', "none");
+            $('#eventLog').css({'display': 'none'});
             $('#membersPage').css({'display': 'none'});
             $('#map-canvas').css({'display': 'block'});
             //var latlng = new google.maps.LatLng(40.453723434964814,-79.93172764778137);
@@ -1047,7 +1056,6 @@ var mem = {
     error: onError
     });
   }
-
 }
 
 var log = {
@@ -1094,6 +1102,12 @@ var log = {
         $(this).css("background-color", "#99FFCC");
         for (var j = 0; j < gmap.serverEvents.length; j++) {
           if ($(this).attr("id") === gmap.serverEvents[j].created) {
+            $("#mapTab").css('background-color', "green");
+            $("#mapTab").css('border', "black 2px outset");
+            $("#logTab").css('background-color', "#23BF00");
+            $("#membersTab").css('background-color', "#23BF00");
+            $("#logTab,#membersTab").css('border', "none");
+            $('#eventLog').css({'display': 'none'});
             $('#eventLog').css({'display': 'none'});
             $('#map-canvas').css({'display': 'block'});
             //var latlng = new google.maps.LatLng(40.453723434964814,-79.93172764778137);
@@ -1169,6 +1183,21 @@ function updateYourLocation() {
     });
   });
 }
+
+function codeLatLng(lat, lng, done) {
+    var latlng = new google.maps.LatLng(lat, lng);
+    console.log("LAMKSNC", latlng);
+    gmap.geocoder.geocode({'latLng': latlng}, function(results, status) {
+      console.log("results = ", results);
+      if (status == google.maps.GeocoderStatus.OK) {
+        if (results[0]) {
+          done(results[0].formatted_address);
+        }
+      } else {
+        done("Unknown Location");
+      }
+    });
+  }
 
 
 function checkLocation() {
