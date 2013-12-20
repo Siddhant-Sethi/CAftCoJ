@@ -27,3 +27,9 @@ How to Use Our App:
 *NOTE: The folder name may not be CAftCoJ-master, but it should be something similar
 4. When running the app on your mobile device you need to go to the URL: --Your IP Address--:3000/static/index.html
 5. The app should now be up and running. 
+
+__________________________________________________________________
+
+Project Video Link:
+
+http://www.youtube.com/watch?v=iZm2a2kVrSo
